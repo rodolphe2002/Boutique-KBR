@@ -218,5 +218,59 @@ body {
 
 
 
+/* ✅ Banniere */
+.banniere {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  border-radius: 10px;
+  margin: 2rem auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.banniere img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.6);
+}
+
+.banniere-contenu {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: var(--white);
+}
+
+.banniere-contenu p {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.banniere-contenu button {
+  background-color: var(--red);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 30px;
+  color: var(--white);
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.banniere-contenu button:hover {
+  background-color: #c42e3d;
+}
+
+
+
+
 
 

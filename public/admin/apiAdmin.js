@@ -1,6 +1,8 @@
 // API endpoints
 const baseUrl = 'https://boutique-kbr.onrender.com';
 
+// const baseUrl = 'http://localhost:3000';
+
 function showSection(id) {
   document.querySelectorAll('.admin-section').forEach(section => section.style.display = 'none');
   const sectionToShow = document.getElementById(id);
