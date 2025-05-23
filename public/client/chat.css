@@ -1,0 +1,145 @@
+/* ===== Palette ===== */
+:root {
+  --rouge: #e60000;
+  --noir: #000000;
+  --gris: #f0f0f0;
+  --blanc: #ffffff;
+  --gris-foncé: #333333;
+}
+
+/* ===== Reset & Base ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: var(--gris);
+  color: var(--noir);
+}
+
+/* ===== Chat Widget ===== */
+#chat-widget {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 300px;
+  max-height: 500px;
+  background-color: var(--blanc);
+  border: 2px solid var(--rouge);
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+#chat-header {
+  background-color: var(--noir);
+  color: var(--blanc);
+  padding: 12px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+#chat-body {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background-color: var(--gris);
+}
+
+#chat-body div {
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+}
+
+#chat-input {
+  display: flex;
+  border-top: 1px solid var(--gris-foncé);
+  background-color: var(--blanc);
+}
+
+#chat-input input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+}
+
+#chat-input button {
+  background-color: var(--rouge);
+  color: var(--blanc);
+  border: none;
+  padding: 0 15px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+#chat-input button:hover {
+  background-color: #cc0000;
+}
+
+/* ===== Toggle Button ===== */
+#toggleChat {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: var(--rouge);
+  color: var(--blanc);
+  border: none;
+  border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease;
+  z-index: 999;
+}
+#toggleChat:hover {
+  transform: scale(1.1);
+}
+
+
+
+/* ===== Boule énergétique (effet animé) ===== */
+#energy-ball {
+  position: fixed;
+  bottom: 47px;
+  right: 47px;
+  width: 0px;
+  height: 0px;
+  background: radial-gradient(circle, var(--rouge), #ff6666);
+  border-radius: 50%;
+  z-index: 1500;
+  opacity: 0;
+  transform: scale(0);
+  pointer-events: none;
+}
+
+@keyframes energy-charge {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.2);
+    box-shadow: 0 0 15px var(--rouge), 0 0 30px var(--rouge);
+  }
+  80% {
+    transform: scale(1.5);
+    opacity: 1;
+    box-shadow: 0 0 30px var(--rouge), 0 0 60px #ff4444;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+}

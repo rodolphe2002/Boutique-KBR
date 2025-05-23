@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Boutique</title>
+  <link rel="stylesheet" href="./admin.css" /> 
+</head>
+<body>
+  <h1>Tableau de bord Admin</h1>
+
+  <nav>
+    <button onclick="showSection('create-session')">Créer une session</button>
+    <button onclick="showSection('create-product')">Créer un produit</button>
+    <button onclick="showSection('orders')">Commandes</button>
+  </nav>
+
+  <section id="create-session" class="admin-section">
+    <h2>Créer une session</h2>
+    <input type="text" id="sessionName" placeholder="Nom de la session" />
+    <button onclick="createSession()">Créer</button>
+    <div id="sessionMessage"></div>
+  </section>
+
+  <section id="create-product" class="admin-section" style="display: none;">
+    <h2>Ajouter un produit</h2>
+    <select id="sessionSelect"></select>
+    <input type="text" id="productTitle" placeholder="Titre" />
+    <textarea id="productDescription" placeholder="Description"></textarea>
+    <input type="number" id="productPrice" placeholder="Prix" />
+    <input type="file" id="productImage" />
+    <button onclick="addProduct()">Ajouter</button>
+    <div id="productMessage"></div>
+  </section>
+
+  <section id="orders" class="admin-section" style="display: none;">
+    <h2>Commandes clients</h2>
+    <canvas id="ordersChart" width="400" height="200"></canvas>
+
+  <div id="stats" style="display: none;">
+  <p>Total des commandes : <span id="totalOrders">0</span></p>
+  <p>Commandes livrées : <span id="deliveredOrders">0</span></p>
+  <p>Commandes annulées : <span id="cancelledOrders">0</span></p>
+  <p>Total des ventes : <span id="totalSales">0 FCFA</span></p>
+  <canvas id="productsChart" width="400" height="200"></canvas>
+</div>
+
+
+    <ul id="orderList"></ul>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="./apiAdmin.js"></script>
+</body>
+</html>

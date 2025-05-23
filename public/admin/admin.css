@@ -1,0 +1,241 @@
+/* admin.css */
+
+/* RESET BASIQUE */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* COULEURS PRINCIPALES */
+:root {
+  --red: #e63946;
+  --dark-red: #a72832;
+  --black: #1a1a1a;
+  --dark-gray: #333333;
+  --gray: #777777;
+  --light-gray: #f0f0f0;
+  --white: #ffffff;
+}
+
+/* CORPS */
+body {
+  background-color: var(--light-gray);
+  color: var(--black);
+  min-height: 100vh;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* TITRE PRINCIPAL */
+h1 {
+  color: var(--red);
+  margin-bottom: 25px;
+  font-weight: 700;
+  font-size: 2.5rem;
+  text-align: center;
+  text-shadow: 1px 1px 3px var(--dark-red);
+}
+
+/* NAVIGATION */
+nav {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+nav button {
+  background-color: var(--red);
+  color: var(--white);
+  border: none;
+  padding: 12px 25px;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 6px rgba(230, 57, 70, 0.4);
+  font-weight: 600;
+}
+
+nav button:hover,
+nav button:focus {
+  background-color: var(--dark-red);
+  outline: none;
+  box-shadow: 0 6px 10px rgba(230, 57, 70, 0.7);
+}
+
+/* SECTIONS ADMIN */
+.admin-section {
+  background-color: var(--white);
+  border-radius: 10px;
+  padding: 25px 30px;
+  max-width: 900px;
+  width: 100%;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  margin-bottom: 40px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.admin-section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.admin-section h2 {
+  color: var(--dark-gray);
+  margin-bottom: 20px;
+  font-weight: 700;
+  font-size: 1.8rem;
+  border-bottom: 3px solid var(--red);
+  padding-bottom: 8px;
+}
+
+/* INPUTS & TEXTAREAS & SELECT */
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 18px;
+  border: 2px solid var(--gray);
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: border-color 0.25s ease;
+  resize: vertical;
+  font-family: inherit;
+  color: var(--black);
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--red);
+  outline: none;
+  box-shadow: 0 0 6px var(--red);
+}
+
+/* BOUTONS DANS LES SECTIONS */
+.admin-section button {
+  background-color: var(--red);
+  color: var(--white);
+  border: none;
+  padding: 12px 25px;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgba(230, 57, 70, 0.5);
+}
+
+.admin-section button:hover,
+.admin-section button:focus {
+  background-color: var(--dark-red);
+  outline: none;
+  box-shadow: 0 6px 12px rgba(230, 57, 70, 0.7);
+}
+
+/* MESSAGES D'AJOUT */
+#sessionMessage,
+#productMessage {
+  margin-top: 10px;
+  font-weight: 600;
+  color: var(--dark-gray);
+  min-height: 1.3em;
+}
+
+/* LISTE DES COMMANDES */
+#orderList {
+  list-style: none;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 10px;
+  border: 1px solid var(--gray);
+  border-radius: 8px;
+}
+
+#orderList li {
+  padding: 15px 10px;
+  border-bottom: 1px solid var(--light-gray);
+  font-size: 0.95rem;
+  color: var(--dark-gray);
+}
+
+#orderList li strong {
+  color: var(--red);
+  font-size: 1.1rem;
+}
+
+#orderList li select {
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: 5px;
+  border: 1.8px solid var(--gray);
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.25s ease;
+}
+
+#orderList li select:hover,
+#orderList li select:focus {
+  border-color: var(--red);
+  outline: none;
+}
+
+/* STATISTIQUES */
+#stats p {
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--black);
+  font-size: 1.1rem;
+}
+
+/* CANVAS STYLING */
+canvas {
+  margin-top: 15px;
+  border-radius: 8px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+  background-color: var(--white);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  nav button {
+    width: 100%;
+  }
+
+  .admin-section {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  .admin-section h2 {
+    font-size: 1.4rem;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  textarea,
+  select,
+  .admin-section button {
+    font-size: 0.9rem;
+  }
+}

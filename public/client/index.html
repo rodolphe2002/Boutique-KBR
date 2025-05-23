@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Boutique en ligne</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./chat.css">
+</head>
+<body>
+
+  <!-- 🔹 Barre de navigation -->
+  <nav class="navbar">
+    <div class="logo">Boutoque KBR</div>
+    <ul class="nav-links">
+      <li><a href="./index.html">Produits</a></li>
+      <li><a href="./cart.html">Panier</a></li>
+      <!-- <li><a href="#chat-widget">Assistance IA</a></li> -->
+    </ul>
+  </nav>
+
+  <!-- 🔹 Barre de recherche -->
+  <section class="search-bar">
+    <input type="text" id="searchInput" placeholder="Rechercher un produit...">
+   
+  </section>
+
+  <!-- 🔹 Onglets de session dynamiques -->
+  <section class="session-tabs" id="sessionTabs">
+    <!-- Onglets générés dynamiquement via JS -->
+    <!-- Exemple :
+    <button class="tab active" data-session-id="123">Vêtements</button>
+    -->
+  </section>
+
+  <!-- 🔹 Liste des produits -->
+  <section class="product-list" id="productList">
+    <!-- Produits générés dynamiquement via JS -->
+    <!-- Exemple de carte produit :
+    <div class="product-card">
+      <img src="/uploads/image.jpg" alt="Produit">
+      <h3>Titre</h3>
+      <p>Description</p>
+      <button>Commander</button>
+    </div>
+    -->
+  </section>
+
+<div id="chat-widget">
+  <div id="chat-header">Assistance IA</div>
+  <div id="chat-body"></div>
+  <div id="chat-input">
+    <input type="text" id="userMessage" placeholder="Posez votre question...">
+    <button onclick="sendMessage()">Envoyer</button>
+  </div>
+</div>
+  <button id="toggleChat" onclick="toggleChat()">🗨️</button>
+  <div id="energy-ball"></div>
+
+
+
+
+  <!-- 🔹 Scripts -->
+  <script src="./script.js"></script>
+  <script src="./chat.js"></script>
+</body>
+</html>

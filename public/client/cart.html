@@ -1,0 +1,42 @@
+<!-- /public/client/cart.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mon Panier</title>
+  <link rel="stylesheet" href="./cart.css">
+</head>
+<body>
+
+
+    <!-- 🔹 Barre de navigation -->
+  <nav class="navbar">
+    <div class="logo">MaBoutique</div>
+    <ul class="nav-links">
+      <li><a href="./index.html">Produits</a></li>
+      <li><a href="./cart.html">Panier</a></li>
+      <li><a href="./chat.html">Assistance IA</a></li>
+    </ul>
+  </nav>
+  <h1>Votre Panier</h1>
+
+  <!-- Zone d'affichage des articles -->
+  <div id="cartItems"></div>
+
+  <!-- Affichage du total -->
+  <div id="cartTotal"></div>
+
+  <!-- Formulaire client -->
+  <h2>Informations client</h2>
+  <label for="clientName">Nom complet :</label><br>
+  <input type="text" id="clientName" placeholder="Votre nom"><br><br>
+
+  <label for="clientPhone">Téléphone :</label><br>
+  <input type="text" id="clientPhone" placeholder="Votre numéro WhatsApp"><br><br>
+
+  <!-- Bouton de validation -->
+  <button onclick="validateOrder()">Valider la commande</button>
+
+  <script src="cart.js"></script>
+</body>
+</html>
