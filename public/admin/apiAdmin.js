@@ -11,6 +11,15 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
   window.location.href = './adminLogin.html'; // Redirection vers la page login
 });
 
+// token de connexion
+
+// Vérifie que l'admin est connecté
+const token = localStorage.getItem('adminToken');
+if (!token) {
+  alert("Accès interdit. Veuillez vous connecter.");
+  window.location.href = './adminLogin.html'; // redirection vers login
+}
+
 function showSection(id) {
   document.querySelectorAll('.admin-section').forEach(section => section.style.display = 'none');
   const sectionToShow = document.getElementById(id);
