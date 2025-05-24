@@ -2,17 +2,25 @@ const express = require('express');
 const multer = require('multer');
 const router = express.Router();
 const Product = require('../models/Product');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('../config/cloudinary'); // Assure-toi que ce fichier est bien configuré
 
-// Upload config
-const storage = multer.diskStorage({
-  destination: 'uploads/',
-  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+// Configuration du stockage Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'products', // Nom du dossier dans Cloudinary
+    allowed_formats: ['jpg', 'jpeg', 'png'],
+    transformation: [{ width: 800, height: 800, crop: 'limit' }] // Optionnel : redimensionnement
+  }
 });
+
 const upload = multer({ storage });
 
+// Créer un produit avec image uploadée sur Cloudinary
 router.post('/', upload.single('image'), async (req, res) => {
   const { title, description, sessionId, price } = req.body;
-  const image = req.file ? req.file.filename : '';
+  const image = req.file ? req.file.path : ''; // URL Cloudinary
   try {
     const product = await Product.create({ title, description, sessionId, price, image });
     res.status(201).json(product);
@@ -21,7 +29,7 @@ router.post('/', upload.single('image'), async (req, res) => {
   }
 });
 
-// GET products, filter by sessionId if present
+// Récupérer tous les produits (option de filtrage par sessionId)
 router.get('/', async (req, res) => {
   const { sessionId } = req.query;
   try {

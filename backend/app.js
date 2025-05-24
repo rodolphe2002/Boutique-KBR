@@ -12,6 +12,9 @@ const productRoutes = require('./routes/productRoutes');
 const chatRoutes = require('./routes/chat');
 const orderRoutes = require('./routes/orderRoutes');
 const adminRoutes = require('./routes/auth');
+const uploadRoute = require('./routes/upload'); 
+
+
 
 // Import du modèle Admin
 const Admin = require('./models/Admin');
@@ -21,7 +24,7 @@ const app = express();
 // Middlewares
 app.use(cors());
 app.use(bodyParser.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use(express.static(path.join(__dirname, '..', 'public', 'client')));
 
@@ -31,6 +34,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api', uploadRoute);
 
 // Routes HTML
 app.get('/', (req, res) => {
