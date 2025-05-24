@@ -1,0 +1,113 @@
+ /* RESET BASIQUE */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* COULEURS PRINCIPALES */
+    :root {
+      --red: #E63946;
+      --dark-red: #c42e3d;
+      --black: #1a1a1a;
+      --dark-gray: #333333;
+      --gray: #777777;
+      --light-gray: #f0f0f0;
+      --white: #ffffff;
+    }
+
+    /* CORPS */
+    body {
+      background-color: var(--light-gray);
+      color: var(--black);
+      min-height: 100vh;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* TITRE PRINCIPAL */
+    h1 {
+      color: var(--red);
+      margin-bottom: 30px;
+      font-weight: 700;
+      font-size: 2.5rem;
+      text-align: center;
+      text-shadow: 1px 1px 3px var(--dark-red);
+    }
+
+    /* FORMULAIRE */
+    form {
+      background-color: var(--white);
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--dark-gray);
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      padding: 12px 15px;
+      margin-bottom: 20px;
+      border: 2px solid var(--gray);
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: border-color 0.25s ease;
+      font-family: inherit;
+      color: var(--black);
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: var(--red);
+      outline: none;
+      box-shadow: 0 0 8px var(--red);
+    }
+
+    button[type="submit"] {
+      background-color: var(--red);
+      color: var(--white);
+      border: none;
+      padding: 12px 25px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 5px 12px rgba(230, 57, 70, 0.6);
+    }
+
+    button[type="submit"]:hover,
+    button[type="submit"]:focus {
+      background-color: var(--dark-red);
+      outline: none;
+      box-shadow: 0 7px 15px rgba(230, 57, 70, 0.8);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 2rem;
+      }
+      form {
+        padding: 20px 25px;
+      }
+      input[type="text"],
+      input[type="password"],
+      button[type="submit"] {
+        font-size: 1rem;
+      }
+    }

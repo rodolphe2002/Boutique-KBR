@@ -3,6 +3,14 @@ const baseUrl = 'https://boutique-kbr.onrender.com/api';
 
 // const baseUrl = 'http://localhost:3000/api';
 
+
+// deconnexion
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  localStorage.removeItem('adminToken'); // Supprime le token
+  alert('Vous êtes déconnecté.');
+  window.location.href = './adminLogin.html'; // Redirection vers la page login
+});
+
 function showSection(id) {
   document.querySelectorAll('.admin-section').forEach(section => section.style.display = 'none');
   const sectionToShow = document.getElementById(id);
@@ -11,10 +19,8 @@ function showSection(id) {
     if (id === 'orders') {
       loadOrders();
       loadStats();
-      // Afficher aussi la section statistiques
       document.getElementById('stats').style.display = 'block';
     } else {
-      // Cacher la section statistiques si on n’est pas sur les commandes
       if(document.getElementById('stats')) {
         document.getElementById('stats').style.display = 'none';
       }
@@ -22,8 +28,8 @@ function showSection(id) {
   }
 }
 
-
 async function createSession() {
+  const token = localStorage.getItem('adminToken');
   const name = document.getElementById('sessionName').value.trim();
   if (!name) {
     alert('Veuillez entrer un nom de session.');
@@ -33,24 +39,31 @@ async function createSession() {
   try {
     const res = await fetch(`${baseUrl}/sessions`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify({ name })
     });
 
     if (!res.ok) throw new Error('Erreur lors de la création de la session.');
-
     const data = await res.json();
     document.getElementById('sessionMessage').innerText = `Session ajoutée : ${data.name}`;
-    loadSessions(); // Recharge la liste dans select
-    document.getElementById('sessionName').value = ''; // reset input
+    loadSessions();
+    document.getElementById('sessionName').value = '';
   } catch (error) {
     alert(error.message);
   }
 }
 
 async function loadSessions() {
+  const token = localStorage.getItem('adminToken');
   try {
-    const res = await fetch(`${baseUrl}/sessions`);
+    const res = await fetch(`${baseUrl}/sessions`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
     if (!res.ok) throw new Error('Erreur chargement sessions.');
     const sessions = await res.json();
     const select = document.getElementById('sessionSelect');
@@ -67,6 +80,7 @@ async function loadSessions() {
 }
 
 async function addProduct() {
+  const token = localStorage.getItem('adminToken');
   const title = document.getElementById('productTitle').value.trim();
   const description = document.getElementById('productDescription').value.trim();
   const price = document.getElementById('productPrice').value.trim();
@@ -89,13 +103,14 @@ async function addProduct() {
   try {
     const res = await fetch(`${baseUrl}/products`, {
       method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
       body: formData
     });
     if (!res.ok) throw new Error('Erreur ajout produit.');
-
     const data = await res.json();
     document.getElementById('productMessage').innerText = `Produit ajouté : ${data.title}`;
-    // reset form fields if needed
     document.getElementById('productTitle').value = '';
     document.getElementById('productDescription').value = '';
     document.getElementById('productPrice').value = '';
@@ -105,12 +120,14 @@ async function addProduct() {
   }
 }
 
-loadSessions(); // Initialisation
-
-// affichage des informations de commande avec statut
 async function loadOrders() {
+  const token = localStorage.getItem('adminToken');
   try {
-    const res = await fetch(`${baseUrl}/orders`);
+    const res = await fetch(`${baseUrl}/orders`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
     if (!res.ok) throw new Error('Erreur chargement commandes.');
     const orders = await res.json();
 
@@ -151,55 +168,51 @@ async function loadOrders() {
   }
 }
 
-// mise à jour du statut de commande
 async function updateOrderStatus(selectElement) {
+  const token = localStorage.getItem('adminToken');
   const orderId = selectElement.getAttribute('data-id');
   const newStatus = selectElement.value;
 
   try {
     const res = await fetch(`${baseUrl}/orders/${orderId}/status`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify({ status: newStatus })
     });
 
     if (!res.ok) throw new Error('Erreur lors de la mise à jour du statut.');
-
     alert('Statut mis à jour.');
   } catch (error) {
     alert(error.message);
   }
 }
 
-
-
-
-// calcul statistique 
-
-
-
 async function loadStats() {
+  const token = localStorage.getItem('adminToken');
   try {
-    const res = await fetch(`${baseUrl}/orders/stats`);
+    const res = await fetch(`${baseUrl}/orders/stats`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
     if (!res.ok) {
       throw new Error("Erreur lors du chargement des statistiques.");
     }
 
     const stats = await res.json();
-
-    // Statistiques globales
     document.getElementById('totalOrders').innerText = stats.totalOrders;
     document.getElementById('deliveredOrders').innerText = stats.deliveredOrders;
     document.getElementById('cancelledOrders').innerText = stats.cancelledOrders;
-    document.getElementById('totalSales').innerText = `${stats.totalSales} FCFA`; // total ventes
+    document.getElementById('totalSales').innerText = `${stats.totalSales} FCFA`;
 
-    // Statistiques mensuelles (par exemple ventes par mois)
-    const monthlyLabels = stats.monthlyStats.map(s => s.month); // Format attendu : "Janvier", "Février", ...
-    const monthlyData = stats.monthlyStats.map(s => s.totalSales); // Ventes par mois
-
+    const monthlyLabels = stats.monthlyStats.map(s => s.month);
+    const monthlyData = stats.monthlyStats.map(s => s.totalSales);
     const ctx = document.getElementById('productsChart').getContext('2d');
 
-    // Détruire l'ancienne instance si elle existe
     if (window.productsChartInstance) {
       window.productsChartInstance.destroy();
     }
@@ -226,3 +239,4 @@ async function loadStats() {
   }
 }
 
+loadSessions(); // Initialisation

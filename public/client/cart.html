@@ -11,12 +11,13 @@
 
     <!-- 🔹 Barre de navigation -->
  <nav class="navbar">
-    <div class="logo">Boutoque KBR</div>
+    <div class="logo">ECFA Shop</div>
     <ul class="nav-links">
       <li><a href="./index.html">Produits</a></li>
- 
+     
     </ul>
   </nav>
+
   <h1>Votre Panier</h1>
 
   <!-- Zone d'affichage des articles -->
@@ -26,15 +27,21 @@
   <div id="cartTotal"></div>
 
   <!-- Formulaire client -->
-  <h2>Informations client</h2>
-  <label for="clientName">Nom complet :</label><br>
-  <input type="text" id="clientName" placeholder="Votre nom"><br><br>
+ <!-- Formulaire client -->
+<h2>Informations client</h2>
 
-  <label for="clientPhone">Téléphone :</label><br>
-  <input type="text" id="clientPhone" placeholder="Votre numéro WhatsApp"><br><br>
+<label for="clientName">Nom complet :</label><br>
+<input type="text" id="clientName" placeholder="Votre nom"><br><br>
 
-  <!-- Bouton de validation -->
-  <button onclick="validateOrder()">Valider la commande</button>
+<label for="clientPhone">Téléphone :</label><br>
+<input type="text" id="clientPhone" placeholder="Votre numéro de téléphone"><br><br>
+
+<label for="clientAddress">Adresse :</label><br>
+<textarea id="clientAddress" placeholder="Votre adresse complète" rows="3"></textarea><br><br>
+
+<!-- Bouton de validation -->
+<button onclick="validateOrder()">Valider la commande</button>
+
 
   <script src="cart.js"></script>
 </body>

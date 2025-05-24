@@ -58,28 +58,37 @@ function validateOrder() {
 async function validateOrder() {
   const name = document.getElementById('clientName').value.trim();
   const phone = document.getElementById('clientPhone').value.trim();
+  const address = document.getElementById('clientAddress').value.trim();
   const items = JSON.parse(localStorage.getItem('cart')) || [];
 
-  if (!name || !phone || items.length === 0) {
-    alert("Veuillez remplir vos informations et ajouter au moins un produit.");
+  if (!name || !phone || !address || items.length === 0) {
+    alert("Veuillez remplir toutes les informations et ajouter au moins un produit.");
     return;
   }
+
+  // Calcul du total
+  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   try {
     const response = await fetch('/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, phone, items })
+      body: JSON.stringify({ name, phone, address, items, total })
     });
 
     const data = await response.json();
 
-    alert(data.message || "Commande validée avec succès !");
-    localStorage.removeItem('cart');
-    location.reload(); // recharge la page pour rafraîchir le panier
+    if (response.ok) {
+      alert("Commande validée avec succès !");
+      localStorage.removeItem('cart');
+      location.reload(); // Recharge la page pour rafraîchir le panier
+    } else {
+      alert(data.error || "Erreur lors de la validation de la commande.");
+    }
   } catch (error) {
     alert("Erreur lors de la validation de la commande.");
     console.error(error);
   }
 }
+
 

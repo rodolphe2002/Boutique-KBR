@@ -239,3 +239,35 @@ canvas {
     font-size: 0.9rem;
   }
 }
+
+
+
+/* bouton de deconnexion */
+
+
+
+
+.logout-button {
+  background-color: #e74c3c;       /* Rouge vif */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.logout-button:hover {
+  background-color: #c0392b;      /* Rouge un peu plus foncé au survol */
+}
+
+.logout-button:active {
+  background-color: #962d22;      /* Rouge encore plus foncé au clic */
+  box-shadow: none;
+  transform: translateY(2px);
+}
+

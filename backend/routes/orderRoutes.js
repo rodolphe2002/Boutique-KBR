@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Order = require('../models/Order'); // assure-toi que ce fichier existe
+const Order = require('../models/Order');
+const authAdmin = require('./authAdmin');
 
 // Enregistrer une commande
 router.post('/', async (req, res) => {
@@ -14,7 +15,7 @@ router.post('/', async (req, res) => {
 });
 
 // Obtenir toutes les commandes
-router.get('/', async (req, res) => {
+router.get('/',authAdmin, async (req, res) => {
   try {
     const orders = await Order.find();
     res.json(orders);
@@ -25,7 +26,7 @@ router.get('/', async (req, res) => {
 
 
 // Statistiques commandes
-router.get('/stats', async (req, res) => {
+router.get('/stats',authAdmin, async (req, res) => {
   try {
     // Statistiques globales (totaux)
     const totalOrders = await Order.countDocuments();
@@ -85,7 +86,7 @@ router.get('/stats', async (req, res) => {
 
 
 // Mise à jour du statut d'une commande
-router.put('/:id/status', async (req, res) => {
+router.put('/:id/status',authAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
