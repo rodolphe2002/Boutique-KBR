@@ -1,7 +1,7 @@
 // API endpoints
-const baseUrl = 'https://boutique-kbr.onrender.com/api';
+// const baseUrl = 'https://boutique-kbr.onrender.com/api';
 
-// const baseUrl = 'http://localhost:3000/api';
+const baseUrl = 'http://localhost:3000/api';
 
 
 // deconnexion

@@ -575,13 +575,16 @@ body {
 
 /* 🔹 Dynamic tabs with hover effect */
 .session-tabs {
-  display: flex;
+
+
+    display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  margin: 2rem auto;
   gap: 1rem;
-  padding: 0 2rem;
-  max-width: 1200px;
+  padding: 3rem 2rem 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
 }
 
 .session-tabs .tab {
@@ -943,12 +946,13 @@ body {
   
   .search-bar {
     padding-top: 8rem;
-    margin-top: 100px;
+    margin-top: 70px;
   }
   
   .banniere {
     height: 350px;
     width: calc(100% - 2rem);
+    margin-bottom: 50px;
   }
   
   .banniere-contenu p {
@@ -967,10 +971,12 @@ body {
 
 @media (max-width: 480px) {
   .session-tabs {
+   
     justify-content: flex-start;
     overflow-x: auto;
     padding-bottom: 1rem;
     scrollbar-width: none;
+   
   }
   
   .session-tabs::-webkit-scrollbar {
