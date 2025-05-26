@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <p><strong>Prix unitaire :</strong> ${item.price} FCFA</p>
       <p><strong>Quantité :</strong> ${item.quantity}</p>
       <p><strong>Total :</strong> ${itemTotal} FCFA</p>
-      <button onclick="removeItem(${index})">Retirer</button>
+      <button  onclick="removeItem(${index})">Retirer</button>
       <hr>
     `;
     cartDiv.appendChild(div);
