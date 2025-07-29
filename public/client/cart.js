@@ -1,7 +1,7 @@
 
-const BASE_URL = window.location.hostname === "localhost"
-  ? "http://localhost:3000/api'"
-  : "https://ecefa-form.onrender.com/api";
+const baseUrl = window.location.hostname === "localhost"
+  ? "http://localhost:3000"
+  : "https://ecefa-form.onrender.com"; 
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -69,7 +69,7 @@ async function validateOrder() {
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   try {
-    const response = await fetch('/api/orders', {
+    const response = await fetch(`${baseUrl}/api/orders`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, phone, address, items, total })

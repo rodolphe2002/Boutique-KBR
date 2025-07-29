@@ -1,7 +1,7 @@
 
-const BASE_URL = window.location.hostname === "localhost"
-  ? "http://localhost:3000/api'"
-  : "https://ecefa-form.onrender.com/api";
+const baseUrl = window.location.hostname === "localhost"
+  ? "http://localhost:3000"
+  : "https://ecefa-form.onrender.com";
 
 let currentProducts = []; // Stocke les produits actuellement affichés
 
@@ -9,9 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchSessions();
 });
 
-async function fetchSessions() {
+async function fetchSessions() { 
   try {
-    const res = await fetch('/api/sessions');
+    const res = await fetch(`${baseUrl}/api/sessions`);
     const sessions = await res.json();
     const sessionTabs = document.getElementById('sessionTabs');
     sessionTabs.innerHTML = '';
@@ -43,7 +43,7 @@ async function fetchSessions() {
 
 async function fetchProducts(sessionId) {
   try {
-    const res = await fetch(`/api/products?sessionId=${sessionId}`);
+    const res = await fetch(`${baseUrl}/api/products?sessionId=${sessionId}`);
     const products = await res.json();
     currentProducts = products;
 

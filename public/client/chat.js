@@ -1,3 +1,9 @@
+
+const baseUrl = window.location.hostname === "localhost"
+  ? "http://localhost:3000"
+  : "https://ecefa-form.onrender.com"; 
+
+
 const sessionId = Date.now().toString(); // Identifiant unique de session (peut être amélioré)
 
 function toggleChat() {
@@ -22,7 +28,7 @@ function toggleChat() {
   }
 }
 
-
+`${baseUrl}`
 
 async function sendMessage() {
   const input = document.getElementById('userMessage');
@@ -33,7 +39,7 @@ async function sendMessage() {
   input.value = '';
 
   try {
-    const res = await fetch("/api/chat", {
+    const res = await fetch(`${baseUrl}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId, userMessage: message })
