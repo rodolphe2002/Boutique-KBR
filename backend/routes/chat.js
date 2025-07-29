@@ -116,30 +116,34 @@ router.post("/", async (req, res) => {
       } else {
         const keywordRegex = /taille|pointure|prix|chaussure|vêtement|téléphone|accessoire|disponible|couleur|stock/i;
 
-        if (keywordRegex.test(userMessage)) {
-          const escapedWords = userMessage
-            .split(" ")
-            .map(word => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
-            .join("|");
+        if (!estUnMessageDeSalutation) {
+  const demandeListeRegex = /liste.*(produits|articles)|produits.*disponibles|quels sont les produits|tous les produits/i;
 
-          const regex = new RegExp(escapedWords, "i");
+  if (demandeListeRegex.test(userMessage)) {
+    dbInfo = await repondreProduitsDisponibles();
+  } else {
+    // 👉 ici on lance toujours la recherche peu importe les mots
+    const mots = userMessage.match(/\b\w+\b/g) || [];
+    const regex = new RegExp(mots.join("|"), "i");
 
-          const results = await Product.find({
-            $or: [{ title: regex }, { description: regex }]
-          }).limit(10);
+    const results = await Product.find({
+      $or: [{ title: regex }, { description: regex }]
+    }).limit(10);
 
-          if (results.length > 0) {
-            dbInfo = "Voici les produits actuellement disponibles :\n" +
-              results.map(p =>
-                `- ${p.title} (${p.price} FCFA) : ${p.description}`
-              ).join("\n");
-          } else {
-            const totalProducts = await Product.countDocuments();
-            dbInfo = totalProducts === 0
-              ? "⚠️ Aucun produit n’est actuellement enregistré dans la boutique. La base de données est vide."
-              : "Aucun produit ne correspond à votre recherche pour le moment.";
-          }
-        }
+    if (results.length > 0) {
+      dbInfo = "Voici les produits actuellement disponibles :\n" +
+        results.map(p =>
+          `- ${p.title} (${p.price} FCFA) : ${p.description}`
+        ).join("\n");
+    } else {
+      const totalProducts = await Product.countDocuments();
+      dbInfo = totalProducts === 0
+        ? "⚠️ Aucun produit n’est actuellement enregistré dans la boutique. La base de données est vide."
+        : "Aucun produit ne correspond à votre recherche pour le moment.";
+    }
+  }
+}
+
       }
     }
 
