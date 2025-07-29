@@ -5,7 +5,7 @@
 
 const baseUrl = window.location.hostname === "localhost"
   ? "http://localhost:3000/api"
-  : "https://ecefa-form.onrender.com/api";
+  : "https://boutique-kbr.onrender.com/api";
 
 
 
@@ -478,6 +478,3 @@ function showSection(id) {
     }
   }
 }
-
-
-

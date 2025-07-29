@@ -1,7 +1,4 @@
 
-const baseUrl = window.location.hostname === "localhost"
-  ? "http://localhost:3000"
-  : "https://ecefa-form.onrender.com"; 
 
 
 const sessionId = Date.now().toString(); // Identifiant unique de session (peut être amélioré)

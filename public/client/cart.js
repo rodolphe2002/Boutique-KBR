@@ -1,7 +1,7 @@
 
 const baseUrl = window.location.hostname === "localhost"
   ? "http://localhost:3000"
-  : "https://ecefa-form.onrender.com"; 
+  : "https://boutique-kbr.onrender.com";
 
 
 document.addEventListener('DOMContentLoaded', () => {
