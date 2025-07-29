@@ -1,0 +1,14 @@
+{
+  "redirects": [
+    {
+      "source": "/admin",
+      "destination": "/admin/admin.html",
+      "statusCode": 301
+    },
+    {
+      "source": "/",
+      "destination": "/client/index.html",
+      "statusCode": 301
+    }
+  ]
+}
