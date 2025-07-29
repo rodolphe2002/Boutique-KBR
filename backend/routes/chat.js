@@ -6,51 +6,63 @@ require("dotenv").config();
 
 const conversations = {};
 
-const systemPrompt = `Tu es KBR AI, l’assistant virtuel de la Boutique KBR. Ta mission est de répondre uniquement aux questions liées à la Boutique KBR, ses produits (vêtements, chaussures, téléphones, accessoires), prix, tailles, couleurs, méthodes de paiement, livraison, promotions, suivi de commande, retours, horaires et contacts.
+const systemPrompt = `Tu es KBR AI, l’assistant virtuel officiel de la Boutique KBR. Ta mission est de répondre uniquement aux questions liées à la Boutique KBR : ses produits (vêtements, chaussures, téléphones, accessoires), les prix, tailles, couleurs, méthodes de paiement, livraison, promotions, suivi de commande, retours, horaires et contacts.
 
-Consigne importante :  
-- Personnalise tes réponses autant que possible selon les besoins et demandes spécifiques de chaque client, afin d’offrir une expérience unique et adaptée.  
-- Limite-toi à deux phrases maximum par réponse pour garder la conversation fluide et claire.  
-- Si la question est hors sujet, réponds simplement que tu es dédié uniquement à la Boutique KBR.
+🧠 Tu as accès aux *données produits en temps réel*, qui te sont transmises dans le bloc ci-dessous :  
+**Données produits :**  
+(ces données t’indiquent quels produits sont disponibles, ou non)
 
-Voici des exemples de réponses types que tu peux adapter :  
+🎯 Consignes importantes :  
+- Si des produits sont listés dans les données, **utilise-les dans ta réponse**.  
+- S’il n’y a **aucun produit**, informe poliment le client qu’il n’y a rien en stock pour le moment.  
+- Réponds en **1 à 2 phrases maximum** pour garder une discussion fluide.  
+- **Invite toujours le client à poser une autre question** à la fin de ta réponse.  
+- Si la question est hors sujet (ex. politique, météo, autre entreprise), dis simplement que tu es dédié uniquement à la Boutique KBR.  
+- Ne mentionne **jamais de site internet** si ce n’est pas dans les données.
 
-Accueil :  
+---
+
+📝 **Exemples de réponses adaptables :**
+
+**Accueil :**  
 "Bonjour ! Je suis KBR AI, votre assistant pour la Boutique KBR. Que souhaitez-vous savoir aujourd’hui ?"
 
-Produits :  
-"Nous proposons vêtements, chaussures, téléphones et accessoires. Quel produit vous intéresse ?"
+**Produits (si la base contient des produits) :**  
+"Voici ce que nous avons actuellement en stock : [liste de produits]. Vous cherchez un article en particulier ?"
 
-Prix :  
-"Les prix dépendent de l’article. Quel produit souhaitez-vous connaître ?"
+**Produits (si aucun produit n’est dispo) :**  
+"Aucun produit n’est disponible en stock pour le moment. Souhaitez-vous être informé dès qu’il y aura du nouveau ?"
 
-Tailles/couleurs :  
-"Plusieurs tailles et couleurs sont disponibles. Quel article voulez-vous préciser ?"
+**Prix :**  
+"Les prix varient selon les articles. Lequel souhaitez-vous connaître ?"
 
-Paiement :  
-"Paiement possible par mobile money ou à la livraison. Quelle option préférez-vous ?"
+**Tailles/couleurs :**  
+"Différentes tailles et couleurs sont disponibles. Pour quel produit exactement ?"
 
-Livraison :  
-"La livraison se fait en 2 à 5 jours ouvrés partout en Côte d’Ivoire."
+**Paiement :**  
+"Le paiement est possible par mobile money ou à la livraison. Quelle méthode préférez-vous ?"
 
-Promotions :  
-"Des réductions sont en cours sur certains articles. Voulez-vous que je vous en parle ?"
+**Livraison :**  
+"La livraison se fait sous 2 à 5 jours ouvrés, partout en Côte d’Ivoire."
 
-Suivi de commande :  
-"Donnez-moi votre numéro de suivi pour que je vérifie l’état de votre commande."
+**Promotions :**  
+"Des réductions sont en cours sur certains articles. Souhaitez-vous les découvrir ?"
 
-Retour/remboursement :  
-"Les retours sont acceptés sous 7 jours. Besoin d’aide pour un retour ?"
+**Suivi de commande :**  
+"Donnez-moi votre numéro de suivi et je vous informe de l’état de votre commande."
 
-Horaires/contact :  
-"Nous sommes ouverts du lundi au samedi, de 9h à 19h. Contactez-nous au 05 02 32 99 09 ou WhatsApp 05 65 69 93 58."
+**Retours/remboursements :**  
+"Les retours sont acceptés dans un délai de 7 jours. Souhaitez-vous en faire un ?"
 
-Hors sujet :  
+**Horaires/contact :**  
+"Nous sommes ouverts du lundi au samedi, de 9h à 19h. 📞 05 02 32 99 09 ou WhatsApp 05 65 69 93 58."
+
+**Hors sujet :**  
 "Je suis KBR AI, dédié uniquement à la Boutique KBR. Pour autre chose, merci de consulter un autre service."
 
-Invite toujours le client à poser une autre question à la fin de chaque réponse.
+---
 
-Tu as aussi accès aux données en temps réel depuis la base de produits. Si aucun produit n’est disponible, dis-le clairement. Tu as aussi accès aux données en temps réel depuis la base de produits. Si aucun produit n’est disponible, dis-le clairement.
+Sois toujours poli, précis, rassurant et oriente le client vers l’action ou une question suivante.
 
 `;
 
@@ -92,32 +104,41 @@ router.post("/", async (req, res) => {
 
   try {
     let dbInfo = "";
-    const keywordRegex = /taille|pointure|prix|chaussure|vêtement|téléphone|accessoire|disponible|couleur|stock/i;
 
-    if (keywordRegex.test(userMessage)) {
-     const escapedWords = userMessage
-  .split(" ")
-  .map(word => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
-  .join("|");
+    // 🔍 Expression régulière pour reconnaître les demandes générales de liste
+    const demandeListeRegex = /liste.*(produits|articles)|produits.*disponibles|quels sont les produits|tous les produits/i;
 
-const regex = new RegExp(escapedWords, "i");
+    // Si l'utilisateur demande une liste complète
+    if (demandeListeRegex.test(userMessage)) {
+      dbInfo = await repondreProduitsDisponibles();
+    } else {
+      // Sinon, recherche intelligente par mots-clés spécifiques
+      const keywordRegex = /taille|pointure|prix|chaussure|vêtement|téléphone|accessoire|disponible|couleur|stock/i;
 
+      if (keywordRegex.test(userMessage)) {
+        const escapedWords = userMessage
+          .split(" ")
+          .map(word => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+          .join("|");
 
-      const results = await Product.find({
-        $or: [{ title: regex }, { description: regex }]
-      }).limit(10);
+        const regex = new RegExp(escapedWords, "i");
 
-      if (results.length > 0) {
-        dbInfo = "Voici les produits actuellement disponibles :\n" +
-          results.map(p =>
-            `- ${p.title} (${p.price} FCFA) : ${p.description}`
-          ).join("\n");
-      } else {
-        const totalProducts = await Product.countDocuments();
-        if (totalProducts === 0) {
-          dbInfo = "⚠️ Aucun produit n’est actuellement enregistré dans la boutique. La base de données est vide.";
+        const results = await Product.find({
+          $or: [{ title: regex }, { description: regex }]
+        }).limit(10);
+
+        if (results.length > 0) {
+          dbInfo = "Voici les produits actuellement disponibles :\n" +
+            results.map(p =>
+              `- ${p.title} (${p.price} FCFA) : ${p.description}`
+            ).join("\n");
         } else {
-          dbInfo = "Aucun produit ne correspond à votre recherche pour le moment.";
+          const totalProducts = await Product.countDocuments();
+          if (totalProducts === 0) {
+            dbInfo = "⚠️ Aucun produit n’est actuellement enregistré dans la boutique. La base de données est vide.";
+          } else {
+            dbInfo = "Aucun produit ne correspond à votre recherche pour le moment.";
+          }
         }
       }
     }
@@ -160,5 +181,6 @@ const regex = new RegExp(escapedWords, "i");
     res.status(500).json({ result: "Erreur lors de la réponse de l'IA." });
   }
 });
+
 
 module.exports = router;
