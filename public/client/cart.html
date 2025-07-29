@@ -2,61 +2,46 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mon Panier</title>
-  <link rel="stylesheet" href="./cart.css">
-  <link rel="icon" type="image/svg+xml" href="./img/WhatsApp Image 2025-05-24 à 22.52.58_10ea0336.jpg" />
+  <link rel="stylesheet" href="./cart.css"/>
+  <link rel="icon" href="./img/WhatsApp Image 2025-05-24 à 22.52.58_10ea0336.jpg" />
 
-
-
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-GK1EPC3V89"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-GK1EPC3V89');
-</script>
+  <!-- Google tag -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GK1EPC3V89"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GK1EPC3V89');
+  </script>
 </head>
 
 <body>
 
-
-    <!-- 🔹 Barre de navigation -->
- <nav class="navbar">
+  <!-- 🔹 Barre de navigation -->
+  <nav class="navbar">
     <div class="logo">Boutique KBR</div>
     <ul class="nav-links">
       <li><a href="./index.html">Produits</a></li>
-     
     </ul>
   </nav>
 
   <h1>Votre Panier</h1>
 
-  <!-- Zone d'affichage des articles -->
+  <!-- Articles -->
   <div id="cartItems"></div>
 
-  <!-- Affichage du total -->
+  <!-- Total -->
   <div id="cartTotal"></div>
 
-  <!-- Formulaire client -->
- <!-- Formulaire client -->
-<h2>Informations client</h2>
-
-<label for="clientName">Nom complet :</label><br>
-<input type="text" id="clientName" placeholder="Votre nom"><br><br>
-
-<label for="clientPhone">Téléphone :</label><br>
-<input type="text" id="clientPhone" placeholder="Votre numéro de téléphone"><br><br>
-
-<label for="clientAddress">Adresse :</label><br>
-<textarea id="clientAddress" placeholder="Votre adresse complète" rows="3"></textarea><br><br>
-
-<!-- Bouton de validation -->
-<button onclick="validateOrder()">Valider la commande</button>
-
+  <!-- Bouton pour aller à l'étape suivante -->
+  <div class="Suivant" style="margin-top: 20px;">
+    <a href="./checkout.html">
+      <button>Suivant</button>
+    </a>
+  </div>
 
   <script src="cart.js"></script>
 </body>

@@ -1,0 +1,53 @@
+<!-- /public/client/checkout.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Commande - Infos Client</title>
+  <link rel="stylesheet" href="./cart.css" />
+  <link rel="icon" href="./img/WhatsApp Image 2025-05-24 à 22.52.58_10ea0336.jpg" />
+</head>
+
+<body>
+
+  <!-- 🔹 Barre de navigation -->
+  <nav class="navbar">
+    <div class="logo">Boutique KBR</div>
+    <ul class="nav-links">
+      <li><a href="./index.html"> Voir Les Produits</a></li>
+      <li><a href="./cart.html">Retour au panier</a></li>
+    </ul>
+  </nav>
+
+  <h2>Informations client</h2>
+
+  <label for="clientName">Nom complet :</label><br>
+  <input type="text" id="clientName" placeholder="Votre nom"><br><br>
+
+  <label for="clientPhone">Téléphone :</label><br>
+  <input type="text" id="clientPhone" placeholder="Votre numéro de téléphone"><br><br>
+
+  <label for="clientAddress">Adresse :</label><br>
+  <textarea id="clientAddress" placeholder="Votre adresse complète" rows="3"></textarea><br><br>
+
+  <!-- Bouton de validation -->
+  <button onclick="validateOrder()">Valider la commande</button>
+
+
+
+  <!-- ✅ Popup de confirmation -->
+<div id="orderSuccessPopup" style="display: none;" class="popup-overlay">
+  <div class="popup-content">
+    <h2>Merci pour votre commande !</h2>
+    <p>Votre commande a été enregistrée avec succès.</p>
+    <p>Elle sera livrée dans les plus brefs délais.</p>
+    <p>Vous allez être redirigé vers nos produits...</p>
+    <button onclick="redirectNow()">Aller maintenant</button>
+  </div>
+</div>
+
+
+  <script src="cart.js"></script>
+</body>
+</html>

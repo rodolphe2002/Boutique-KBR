@@ -109,4 +109,18 @@ router.put('/:id/status',authAdmin, async (req, res) => {
 
 
 
+router.delete('/:id', authAdmin, async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    await Order.findByIdAndDelete(orderId);
+    res.status(200).json({ message: 'Commande supprimée.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Erreur lors de la suppression de la commande.' });
+  }
+});
+
+
+
+
+
 module.exports = router;

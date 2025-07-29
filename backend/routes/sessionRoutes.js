@@ -37,4 +37,38 @@ router.get('/', async (req, res) => {
 });
 
 
+// Supprimer une session
+
+router.delete('/:id', async (req, res) => {
+  try {
+    await Session.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Session supprimée' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// 🔄 Modifier une session
+router.put('/:id', async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name) return res.status(400).json({ error: "Nom requis" });
+
+    const slug = name.toLowerCase().replace(/\s+/g, '-');
+    const updated = await Session.findByIdAndUpdate(
+      req.params.id,
+      { name, slug },
+      { new: true }
+    );
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
+
+
 module.exports = router;

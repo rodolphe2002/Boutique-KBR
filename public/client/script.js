@@ -1,3 +1,8 @@
+
+const BASE_URL = window.location.hostname === "localhost"
+  ? "http://localhost:3000/api'"
+  : "https://ecefa-form.onrender.com/api";
+
 let currentProducts = []; // Stocke les produits actuellement affichés
 
 document.addEventListener('DOMContentLoaded', () => {

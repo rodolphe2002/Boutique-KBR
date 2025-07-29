@@ -1,3 +1,9 @@
+
+const BASE_URL = window.location.hostname === "localhost"
+  ? "http://localhost:3000/api'"
+  : "https://ecefa-form.onrender.com/api";
+
+
 document.addEventListener('DOMContentLoaded', () => {
   const items = JSON.parse(localStorage.getItem('cart')) || [];
   const cartDiv = document.getElementById('cartItems');
@@ -71,13 +77,15 @@ async function validateOrder() {
 
     const data = await response.json();
 
-    if (response.ok) {
-      alert("Commande validée avec succès !");
-      localStorage.removeItem('cart');
-      location.reload();
-    } else {
-      alert(data.error || "Erreur lors de la validation de la commande.");
-    }
+if (response.ok) {
+  localStorage.removeItem('cart');
+  document.getElementById('orderSuccessPopup').style.display = 'flex';
+
+  setTimeout(() => {
+    window.location.href = './index.html';
+  }, 5000); // redirection après 5 sec
+}
+
   } catch (error) {
     alert("Erreur lors de la validation de la commande.");
     console.error(error);

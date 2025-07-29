@@ -381,6 +381,30 @@ button[onclick="validateOrder()"]  {
   margin-bottom: 20px;
 }
 
+button {
+   display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 2rem auto 0;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 20px rgba(255, 62, 77, 0.3);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 20px;}
+
+
+  .Suivant a{
+    text-decoration: none;
+  }
+
 button[onclick="validateOrder()"] ::before {
   content: '';
   position: absolute;
@@ -400,6 +424,50 @@ button[onclick="validateOrder()"] :hover {
 button[onclick="validateOrder()"] ::before {
   left: 100%;
 }
+
+/* pop up */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.popup-content {
+  background: linear-gradient(135deg, var(--lighter), var(--accent));
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  max-width: 90%;
+  width: 400px;
+}
+.popup-content h2 {
+  color: #2ecc71;
+}
+
+.popup-content p{
+  color: #0A0A0A;
+}
+.popup-content button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.popup-content button:hover {
+  background: var(--primary-dark);
+}
+
 
 /* ===== Responsive Design ===== */
 @media (max-width: 992px) {

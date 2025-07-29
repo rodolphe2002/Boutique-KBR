@@ -1,7 +1,12 @@
 // API endpoints
-const baseUrl = 'https://boutique-kbr.onrender.com/api';
+// const baseUrl = 'https://boutique-kbr.onrender.com/api';
 
 // const baseUrl = 'http://localhost:3000/api';
+
+const baseUrl = window.location.hostname === "localhost"
+  ? "http://localhost:3000/api"
+  : "https://ecefa-form.onrender.com/api";
+
 
 
 // deconnexion
@@ -128,7 +133,6 @@ async function addProduct() {
     alert(error.message);
   }
 }
-
 async function loadOrders() {
   const token = localStorage.getItem('adminToken');
   try {
@@ -168,10 +172,33 @@ async function loadOrders() {
           ${order.items.map(item => `<li>${item.title} x${item.quantity} - ${item.price} FCFA</li>`).join('')}
         </ul>
         Date : ${new Date(order.createdAt).toLocaleString()}
+        <br>
+        <button onclick="deleteOrder('${order._id}')">🗑 Supprimer</button>
         <hr>
       `;
       orderList.appendChild(li);
     });
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+// Fonction pour supprimer une commande
+async function deleteOrder(orderId) {
+  const confirmation = confirm("Voulez-vous vraiment supprimer cette commande ?");
+  if (!confirmation) return;
+
+  const token = localStorage.getItem('adminToken');
+  try {
+    const res = await fetch(`${baseUrl}/orders/${orderId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    if (!res.ok) throw new Error("Échec de la suppression de la commande.");
+    alert("Commande supprimée avec succès.");
+    loadOrders(); // Recharger la liste
   } catch (error) {
     alert(error.message);
   }
@@ -249,3 +276,208 @@ async function loadStats() {
 }
 
 loadSessions(); // Initialisation
+
+
+
+// Charger les sessions avec options de suppression/modification
+
+async function loadSessionManagement() {
+  const token = localStorage.getItem('adminToken');
+  try {
+    const res = await fetch(`${baseUrl}/sessions`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const sessions = await res.json();
+
+    const sessionList = document.getElementById('sessionList');
+    sessionList.innerHTML = '';
+    
+    sessions.forEach(session => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <input type="text" value="${session.name}" id="edit-session-${session._id}" />
+  <button onclick="updateSession('${session._id}')">Modifier</button>
+  <button onclick="deleteSession('${session._id}')">Supprimer</button>
+      `;
+      sessionList.appendChild(li);
+    });
+  } catch (err) {
+    alert('Erreur chargement sessions à gérer');
+  }
+}
+
+
+
+// supprimer une session
+async function deleteSession(id) {
+  const token = localStorage.getItem('adminToken');
+  if (!confirm('Supprimer cette session ?')) return;
+
+  try {
+    const res = await fetch(`${baseUrl}/sessions/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Échec suppression');
+    alert('Session supprimée');
+    loadSessionManagement();
+    loadSessions(); // recharge dropdown
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+
+// Modifier une session
+async function updateSession(id) {
+  const token = localStorage.getItem('adminToken');
+  const name = document.getElementById(`edit-session-${id}`).value.trim();
+  if (!name) {
+    alert("Nom invalide");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${baseUrl}/sessions/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ name })
+    });
+
+    if (!res.ok) throw new Error('Erreur modification');
+    alert("Session modifiée");
+    loadSessionManagement();
+    loadSessions(); // rafraîchit la liste pour "Ajouter produit"
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+
+
+
+
+
+
+
+//Charger les produits avec options de suppression/modification
+
+
+
+
+async function loadProductManagement() {
+  const token = localStorage.getItem('adminToken');
+  try {
+    const res = await fetch(`${baseUrl}/products`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const products = await res.json();
+
+    const productList = document.getElementById('productList');
+    productList.innerHTML = '';
+
+    products.forEach(product => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+          <input type="text" id="edit-title-${product._id}" value="${product.title}" />
+  <input type="number" id="edit-price-${product._id}" value="${product.price}" style="width: 80px;" />
+  <button onclick="updateProduct('${product._id}')">Modifier</button>
+  <button onclick="deleteProduct('${product._id}')">Supprimer</button>
+      `;
+      productList.appendChild(li);
+    });
+  } catch (err) {
+    alert('Erreur chargement produits à gérer');
+  }
+}
+
+
+// supprimer un produit
+
+async function deleteProduct(id) {
+  const token = localStorage.getItem('adminToken');
+  if (!confirm('Supprimer ce produit ?')) return;
+
+  try {
+    const res = await fetch(`${baseUrl}/products/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Échec suppression');
+    alert('Produit supprimé');
+    loadProductManagement();
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+
+// Modifier un produit
+
+async function updateProduct(id) {
+  const token = localStorage.getItem('adminToken');
+  const title = document.getElementById(`edit-title-${id}`).value.trim();
+  const price = document.getElementById(`edit-price-${id}`).value.trim();
+
+  if (!title || !price) {
+    alert("Champs invalides");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${baseUrl}/products/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ title, price })
+    });
+
+    if (!res.ok) throw new Error("Erreur modification produit");
+    alert("Produit modifié");
+    loadProductManagement();
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+
+
+
+
+
+//  Charger automatiquement selon la section affichée
+
+
+function showSection(id) {
+  document.querySelectorAll('.admin-section').forEach(section => section.style.display = 'none');
+  const sectionToShow = document.getElementById(id);
+  if (sectionToShow) {
+    sectionToShow.style.display = 'block';
+
+    if (id === 'orders') {
+      loadOrders();
+      loadStats();
+      document.getElementById('stats').style.display = 'block';
+    } else {
+      if (document.getElementById('stats')) {
+        document.getElementById('stats').style.display = 'none';
+      }
+    }
+
+    if (id === 'manage-sessions') {
+      loadSessionManagement();
+    }
+
+    if (id === 'manage-products') {
+      loadProductManagement();
+    }
+  }
+}
+
+
+

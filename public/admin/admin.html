@@ -14,6 +14,8 @@
   <nav>
     <button onclick="showSection('create-session')">Créer une session</button>
     <button onclick="showSection('create-product')">Créer un produit</button>
+      <button onclick="showSection('manage-sessions')">Gérer les sessions</button>
+  <button onclick="showSection('manage-products')">Gérer les produits</button>
     <button onclick="showSection('orders')">Commandes</button>
   </nav>
 
@@ -50,6 +52,18 @@
 
     <ul id="orderList"></ul>
   </section>
+
+  <section id="manage-sessions" class="admin-section" style="display: none;">
+  <h2>Gérer les sessions</h2>
+  <ul id="sessionList"></ul>
+</section>
+
+<section id="manage-products" class="admin-section" style="display: none;">
+  <h2>Gérer les produits</h2>
+  <ul id="productList"></ul>
+</section>
+
+
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="./apiAdmin.js"></script>

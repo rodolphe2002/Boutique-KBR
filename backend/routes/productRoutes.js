@@ -41,4 +41,34 @@ router.get('/', async (req, res) => {
   }
 });
 
+
+// Supprimer un produit
+
+
+router.delete('/:id', async (req, res) => {
+  try {
+    await Product.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Produit supprimé' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 🔄 Modifier un produit (titre, prix uniquement ici)
+router.put('/:id', async (req, res) => {
+  try {
+    const { title, price } = req.body;
+    const updated = await Product.findByIdAndUpdate(
+      req.params.id,
+      { title, price },
+      { new: true }
+    );
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
 module.exports = router;
