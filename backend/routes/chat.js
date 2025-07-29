@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Product = require("../models/Product");
+const Session = require("../models/Session");
 require("dotenv").config();
 
 const conversations = {};
@@ -52,6 +53,29 @@ Invite toujours le client à poser une autre question à la fin de chaque répon
 Tu as aussi accès aux données en temps réel depuis la base de produits. Si aucun produit n’est disponible, dis-le clairement. Tu as aussi accès aux données en temps réel depuis la base de produits. Si aucun produit n’est disponible, dis-le clairement.
 
 `;
+
+
+async function repondreProduitsDisponibles() {
+  const sessions = await Session.find();
+  let reponse = "Voici les produits actuellement disponibles à la Boutique KBR :\n";
+
+  for (const session of sessions) {
+    const produits = await Product.find({ sessionId: session._id });
+
+    if (produits.length > 0) {
+      reponse += `\n🗂️ *${session.name}* :\n`;
+      produits.forEach((produit, index) => {
+        reponse += `- ${produit.title} (${produit.price} FCFA)\n`;
+      });
+    }
+  }
+
+  if (reponse === "Voici les produits actuellement disponibles à la Boutique KBR :\n") {
+    reponse = "Aucun produit n’est disponible pour le moment.";
+  }
+
+  return reponse;
+}
 
 router.post("/", async (req, res) => {
   const { sessionId, userMessage } = req.body;
