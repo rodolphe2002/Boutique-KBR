@@ -29,7 +29,7 @@ router.post('/', upload.single('image'), async (req, res) => {
   }
 });
 
-// Récupérer tous les produits (option de filtrage par sessionId)
+// GET /api/products?sessionId=abc123
 router.get('/', async (req, res) => {
   const { sessionId } = req.query;
   try {
@@ -40,6 +40,7 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 
 // Supprimer un produit
