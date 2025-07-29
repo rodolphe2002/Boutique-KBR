@@ -1,8 +1,10 @@
 const express = require("express");
 const router = express.Router();
+const Product = require("../models/Product");
 require("dotenv").config();
 
 const conversations = {};
+
 const systemPrompt = `Tu es KBR AI, l’assistant virtuel de la Boutique KBR. Ta mission est de répondre uniquement aux questions liées à la Boutique KBR, ses produits (vêtements, chaussures, téléphones, accessoires), prix, tailles, couleurs, méthodes de paiement, livraison, promotions, suivi de commande, retours, horaires et contacts.
 
 Consigne importante :  
@@ -45,14 +47,15 @@ Horaires/contact :
 Hors sujet :  
 "Je suis KBR AI, dédié uniquement à la Boutique KBR. Pour autre chose, merci de consulter un autre service."
 
-Invite toujours le client à poser une autre question à la fin de chaque réponse.  
+Invite toujours le client à poser une autre question à la fin de chaque réponse.
 
-
+Tu as aussi accès aux données en temps réel depuis la base de produits. Si aucun produit n’est disponible, dis-le clairement. Tu as aussi accès aux données en temps réel depuis la base de produits. Si aucun produit n’est disponible, dis-le clairement.
 
 `;
 
 router.post("/", async (req, res) => {
   const { sessionId, userMessage } = req.body;
+
   if (!sessionId || !userMessage) {
     return res.status(400).json({ result: "sessionId et userMessage sont requis." });
   }
@@ -60,9 +63,46 @@ router.post("/", async (req, res) => {
   if (!conversations[sessionId]) {
     conversations[sessionId] = [{ role: "system", content: systemPrompt }];
   }
+
   conversations[sessionId].push({ role: "user", content: userMessage });
 
   try {
+    let dbInfo = "";
+    const keywordRegex = /taille|pointure|prix|chaussure|vêtement|téléphone|accessoire|disponible|couleur|stock/i;
+
+    if (keywordRegex.test(userMessage)) {
+     const escapedWords = userMessage
+  .split(" ")
+  .map(word => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+  .join("|");
+
+const regex = new RegExp(escapedWords, "i");
+
+
+      const results = await Product.find({
+        $or: [{ title: regex }, { description: regex }]
+      }).limit(10);
+
+      if (results.length > 0) {
+        dbInfo = "Voici les produits actuellement disponibles :\n" +
+          results.map(p =>
+            `- ${p.title} (${p.price} FCFA) : ${p.description}`
+          ).join("\n");
+      } else {
+        const totalProducts = await Product.countDocuments();
+        if (totalProducts === 0) {
+          dbInfo = "⚠️ Aucun produit n’est actuellement enregistré dans la boutique. La base de données est vide.";
+        } else {
+          dbInfo = "Aucun produit ne correspond à votre recherche pour le moment.";
+        }
+      }
+    }
+
+    const messages = [
+      { role: "system", content: `${systemPrompt}\n\nDonnées produits :\n${dbInfo}` },
+      ...conversations[sessionId]
+    ];
+
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -71,14 +111,16 @@ router.post("/", async (req, res) => {
       },
       body: JSON.stringify({
         model: "mistralai/mistral-7b-instruct",
-        messages: conversations[sessionId],
+        messages,
         max_tokens: 700,
         temperature: 0.7,
       }),
     });
 
     if (!response.ok) {
-      if (response.status === 429) return res.status(429).json({ result: "Limite API dépassée." });
+      if (response.status === 429) {
+        return res.status(429).json({ result: "Limite API dépassée." });
+      }
       throw new Error(`Erreur API : ${response.statusText}`);
     }
 
@@ -88,6 +130,7 @@ router.post("/", async (req, res) => {
     conversations[sessionId].push({ role: "assistant", content: assistantReply });
 
     res.json({ result: assistantReply });
+
   } catch (error) {
     console.error("Erreur IA:", error);
     res.status(500).json({ result: "Erreur lors de la réponse de l'IA." });
