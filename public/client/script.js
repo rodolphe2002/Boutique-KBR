@@ -132,3 +132,24 @@ function performSearch(query) {
     productList.appendChild(card);
   });
 }
+
+
+
+
+    // Tableau de messages à afficher
+    const messages = [
+
+      "Livraison rapide disponible à Abidjan !",
+      "Promo : jusqu'à -20% sur les articles sélectionnés !",
+      "Besoin d’aide ? Appelez-nous au 05 02 32 99 09 ou écrivez-nous sur WhatsApp au 05 65 69 93 58.",
+      "Nouveaux produits ajoutés chaque jour !"
+    ];
+
+    let index = 0;
+    const banniere = document.getElementById("banniereTexte");
+
+    // Changer le message toutes les secondes
+    setInterval(() => {
+      banniere.textContent = messages[index];
+      index = (index + 1) % messages.length; // Boucle infinie
+    }, 2000);

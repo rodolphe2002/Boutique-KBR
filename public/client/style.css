@@ -1131,3 +1131,14 @@ a, button {
   cursor: url('pointer.cur'), pointer;
 }
 */
+
+
+
+  .banniereTexte {
+      background-color: var(--accent); /* Vert foncé comme sur l’image */
+      color: yellow;
+      font-weight: bold;
+      text-align: center;
+      padding: 10px;
+      font-size: 24px;
+    }
