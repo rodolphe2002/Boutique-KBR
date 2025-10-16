@@ -97,6 +97,50 @@ function removeItem(index) {
   renderCart();
 }
 
+// Fetch and render recommendations for one or more session IDs
+async function renderRecommendationsForSessions(sessionIds, excludeIds) {
+  try {
+    const recoGrid = document.getElementById('recoGrid');
+    if (!recoGrid) return;
+    const excludeSet = new Set(excludeIds || []);
+
+    // Fetch products for each session id in parallel
+    const responses = await Promise.all(
+      sessionIds.map(id => fetch(`${baseUrl}/api/products?sessionId=${encodeURIComponent(id)}&_=${Date.now()}`))
+    );
+    const lists = await Promise.all(responses.map(r => r.ok ? r.json() : Promise.resolve([])));
+    const combined = lists.flat();
+
+    const seen = new Set();
+    const filtered = combined.filter(p => {
+      if (!p || !p._id || excludeSet.has(p._id) || seen.has(p._id)) return false;
+      seen.add(p._id);
+      return true;
+    });
+
+    const picks = filtered.slice(0, 6);
+    if (!picks.length) {
+      recoGrid.innerHTML = '<p class="muted">Aucune recommandation pour le moment.</p>';
+      return;
+    }
+
+    recoGrid.innerHTML = picks.map(p => {
+      const img = (Array.isArray(p.images) && p.images[0]) || p.image || '';
+      return `
+        <article class="reco-card" onclick="location.href='product.html?productId=${encodeURIComponent(p._id)}'" style="cursor:pointer">
+          <img src="${img}" alt="${p.title}">
+          <div class="reco-info">
+            <div>${p.title}</div>
+            <div style="font-weight:700;">${p.price} FCFA</div>
+          </div>
+        </article>
+      `;
+    }).join('');
+  } catch (e) {
+    console.error('Erreur recommandations:', e);
+  }
+}
+
 // Vider complètement le panier
 function clearCart() {
   localStorage.removeItem('cart');

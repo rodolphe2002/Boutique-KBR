@@ -16,7 +16,7 @@
 
 /* ===== Base & Reset ===== */
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   background-color: #FFFFFF;
   color: #111111;
   line-height: 1.6;
@@ -138,7 +138,12 @@ body {
   text-align: center;
 }
 
-.cart-price, .cart-total { font-weight: 700; }
+.cart-price, .cart-total {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  color: #111111;
+  font-size: 18px;
+}
 
 /* ===== Summary card ===== */
 .summary-card {
@@ -150,9 +155,23 @@ body {
   height: fit-content;
   background: #fff;
 }
-.summary-card h3 { margin-top: 0; margin-bottom: .75rem; }
+.summary-card h3 {
+  margin-top: 0;
+  margin-bottom: .75rem;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  color: #111111;
+  font-size: 18px;
+}
 .summary-line, .summary-total { display: flex; justify-content: space-between; padding: .5rem 0; }
-.summary-total { border-top: 1px solid rgba(0,0,0,0.08); margin-top: .5rem; font-size: 1.1rem; font-weight: 800; }
+.summary-total {
+  border-top: 1px solid rgba(0,0,0,0.08);
+  margin-top: .5rem;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  color: #111111;
+  font-size: 18px;
+}
 .checkout-btn {
   display: block;
   width: 100%;
@@ -257,9 +276,11 @@ body {
 }
 
 .cart-item h3 {
-  font-size: 1.3rem;
   margin-bottom: 0.5rem;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 700;
   color: #111111;
+  font-size: 18px;
 }
 
 .cart-item p {
