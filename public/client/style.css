@@ -829,7 +829,7 @@ body {
 
 .session-card {
   position: relative;
-  height: 420px;
+  height: 520px;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -893,7 +893,7 @@ body {
 
 @media (max-width: 768px) {
   .sessions-grid { grid-template-columns: 1fr; padding: 0; margin: 0; max-width: none; gap: 0; }
-  .session-card { height: 340px; border-radius: 0; }
+  .session-card { height: 420px; border-radius: 0; margin: 12px 0; }
   .session-title { font-size: 1.4rem; }
 }
 
@@ -927,13 +927,14 @@ body {
 .banniere {
   position: relative;
   width: calc(100% - 4rem);
-  height: 500px;
+  height: 600px;
   overflow: hidden;
   border: none !important;
   margin: 2rem auto;
   box-shadow: var(--shadow-lg);
   transform-style: preserve-3d;
   perspective: 1000px;
+  border-radius: 0;
 }
 
 .banniere::before {
@@ -1194,13 +1195,27 @@ body {
 }
 
 /* 🔹 Responsive design */
+@media (max-width: 1200px) {
+  .banniere-contenu {
+    padding: 1rem 2rem;
+  }
+  
+  .banniere {
+    height: 500px;
+  }
+  
+  .banniere-contenu p {
+    font-size: 1.8rem;
+  }
+}
+
 @media (max-width: 992px) {
   .navbar {
     padding: 1rem 2rem;
   }
   
   .banniere {
-    height: 400px;
+    height: 550px;
   }
   
   .banniere-contenu p {
@@ -1233,8 +1248,20 @@ body {
     width: 100vw;
     margin: 0;
     margin-bottom: 10px;
-
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
+  /* Place the CTA closer to the bottom on mobile */
+  .banniere-contenu {
+    top: auto;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .banniere::before,
+  .banniere img,
+  .banniere video,
+  .banniere .banniere-media { border-radius: 0 !important; }
   
   .banniere-contenu p {
     font-size: 1.4rem;
@@ -1268,9 +1295,14 @@ body {
   }
   
   .banniere {
-    height: 300px;
-   
+    height: 420px;
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
+  .banniere::before,
+  .banniere img,
+  .banniere video,
+  .banniere .banniere-media { border-radius: 0 !important; }
   
   .banniere-contenu p {
     font-size: 1.3rem;
