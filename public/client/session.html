@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Détails de la session</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./chat.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="icon" type="image/svg+xml" href="./img/WhatsApp Image 2025-05-24 à 22.52.58_10ea0336.jpg" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo"><img src="./img/Logo.jpg" alt="Boutique KBR"></div>
+    <ul class="nav-links">
+      <li><a href="./index.html">Accueil</a></li>
+      <li><a href="./cart.html"><i class="fas fa-shopping-cart"></i></a></li>
+    </ul>
+  </nav>
+
+  <section class="search-bar">
+    <input type="text" id="searchInput" placeholder="Recherchez dans cette session...">
+  </section>
+
+  <section class="banniere" id="sessionBanner" style="display:none;">
+    <img id="sessionBannerImg" src="" alt="Image de la session">
+    <div class="banniere-contenu">
+      <p id="sessionSubtitle"></p>
+      <button><a href="#productList">Voir les produits</a></button>
+    </div>
+  </section>
+
+  <section class="product-list" id="productList"></section>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-section">
+        <h3>À propos</h3>
+        <p>Nous sommes une boutique 100 % fiable dédiée à votre satisfaction. Produits testés et approuvés !</p>
+      </div>
+      <div class="footer-section">
+        <h3>Liens rapides</h3>
+        <ul>
+          <li><a href="./index.html">Accueil</a></li>
+          <li><a href="#productList">Produits</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Suivez-nous</h3>
+        <div class="socials">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="https://wa.me/message/FMG72KBPGVJRD1"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2025 Boutique KBR | Tous droits réservés
+    </div>
+  </footer>
+
+  <script src="./session.js"></script>
+  <script src="./chat.js"></script>
+</body>
+</html>

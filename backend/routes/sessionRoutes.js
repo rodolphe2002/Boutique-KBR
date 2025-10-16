@@ -1,8 +1,23 @@
 const express = require('express');
+const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('../config/cloudinary');
 const router = express.Router();
 const Session = require('../models/Session');
 
-router.post('/', async (req, res) => {
+// Configure Cloudinary storage for session images
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'sessions',
+    allowed_formats: ['jpg', 'jpeg', 'png'],
+    transformation: [{ width: 800, height: 800, crop: 'limit' }]
+  }
+});
+
+const upload = multer({ storage });
+
+router.post('/', upload.single('image'), async (req, res) => {
   try {
     const { name } = req.body;
     if (!name) {
@@ -17,7 +32,8 @@ router.post('/', async (req, res) => {
       return res.status(409).json({ error: 'Cette session existe déjà' });
     }
 
-    const session = await Session.create({ name, slug });
+    const image = req.file ? req.file.path : undefined; // Cloudinary URL if provided
+    const session = await Session.create({ name, slug, image });
     res.status(201).json(session);
   } catch (err) {
     console.error('Erreur création session:', err);

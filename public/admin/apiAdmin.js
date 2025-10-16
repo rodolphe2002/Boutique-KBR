@@ -45,19 +45,24 @@ function showSection(id) {
 async function createSession() {
   const token = localStorage.getItem('adminToken');
   const name = document.getElementById('sessionName').value.trim();
+  const imageInput = document.getElementById('sessionImage');
+  const image = imageInput && imageInput.files[0] ? imageInput.files[0] : null;
   if (!name) {
     alert('Veuillez entrer un nom de session.');
     return;
   }
 
+  const formData = new FormData();
+  formData.append('name', name);
+  if (image) formData.append('image', image);
+
   try {
     const res = await fetch(`${baseUrl}/sessions`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ name })
+      body: formData
     });
 
     if (!res.ok) throw new Error('Erreur lors de la création de la session.');
@@ -65,6 +70,7 @@ async function createSession() {
     document.getElementById('sessionMessage').innerText = `Session ajoutée : ${data.name}`;
     loadSessions();
     document.getElementById('sessionName').value = '';
+    if (imageInput) imageInput.value = '';
   } catch (error) {
     alert(error.message);
   }
@@ -93,26 +99,57 @@ async function loadSessions() {
   }
 }
 
+let isAddingProduct = false;
+
 async function addProduct() {
+  if (isAddingProduct) return; // guard against double-clicks / duplicate requests
+  isAddingProduct = true;
+  const addBtn = document.getElementById('addProductBtn');
+  if (addBtn) {
+    addBtn.disabled = true;
+    addBtn.textContent = 'Ajout en cours...';
+  }
   const token = localStorage.getItem('adminToken');
   const title = document.getElementById('productTitle').value.trim();
   const description = document.getElementById('productDescription').value.trim();
   const price = document.getElementById('productPrice').value.trim();
   const sessionId = document.getElementById('sessionSelect').value;
-  const imageInput = document.getElementById('productImage');
-  const image = imageInput.files[0];
+  const imagesInput = document.getElementById('productImages');
+  const files = imagesInput && imagesInput.files ? Array.from(imagesInput.files) : [];
 
-  if (!title || !description || !price || !sessionId || !image) {
-    alert('Veuillez remplir tous les champs et choisir une image.');
+  // Variants
+  const variantTypeEl = document.getElementById('variantType');
+  const variantValuesEl = document.getElementById('variantValues');
+  const variantType = variantTypeEl ? variantTypeEl.value : 'none';
+  const variantValuesRaw = (variantValuesEl ? variantValuesEl.value : '').trim();
+  const variants = variantValuesRaw
+    ? variantValuesRaw.split(',').map(v => v.trim()).filter(Boolean)
+    : [];
+
+  if (!title || !description || !price || !sessionId || files.length === 0) {
+    alert('Veuillez remplir tous les champs et ajouter au moins une image.');
+    return;
+  }
+  if (files.length > 10) {
+    alert('Vous pouvez ajouter jusqu\'à 10 images maximum.');
     return;
   }
 
   const formData = new FormData();
+  // Generate idempotency key for this request
+  const clientRequestId = `prod_${Date.now()}_${Math.random().toString(36).slice(2,10)}`;
   formData.append('title', title);
   formData.append('description', description);
   formData.append('price', price);
   formData.append('sessionId', sessionId);
-  formData.append('image', image);
+  formData.append('clientRequestId', clientRequestId);
+  // Send only the first image as 'image' (compatible with current backend)
+  formData.append('image', files[0]);
+  // Send gallery images (backend now supports 'images')
+  files.forEach((f) => formData.append('images', f));
+  // New: variants
+  formData.append('variantType', variantType);
+  formData.append('variants', JSON.stringify(variants));
 
   try {
     const res = await fetch(`${baseUrl}/products`, {
@@ -128,9 +165,17 @@ async function addProduct() {
     document.getElementById('productTitle').value = '';
     document.getElementById('productDescription').value = '';
     document.getElementById('productPrice').value = '';
-    imageInput.value = '';
+    imagesInput.value = '';
+    if (variantTypeEl) variantTypeEl.value = 'none';
+    if (variantValuesEl) variantValuesEl.value = '';
   } catch (error) {
     alert(error.message);
+  } finally {
+    isAddingProduct = false;
+    if (addBtn) {
+      addBtn.disabled = false;
+      addBtn.textContent = 'Ajouter';
+    }
   }
 }
 async function loadOrders() {

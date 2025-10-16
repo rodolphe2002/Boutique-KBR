@@ -5,52 +5,112 @@ const baseUrl = window.location.hostname === "localhost"
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  const items = JSON.parse(localStorage.getItem('cart')) || [];
-  const cartDiv = document.getElementById('cartItems');
-  const totalDiv = document.getElementById('cartTotal');
+  renderCart();
+});
 
-  if (items.length === 0) {
-    cartDiv.innerHTML = '<p>Votre panier est vide.</p>';
-    totalDiv.innerHTML = '';
+function getCart() {
+  return JSON.parse(localStorage.getItem('cart')) || [];
+}
+
+function setCart(items) {
+  localStorage.setItem('cart', JSON.stringify(items));
+}
+
+function renderCart() {
+  const items = getCart();
+  const emptyState = document.getElementById('emptyState');
+  const cartGrid = document.getElementById('cartGrid');
+  const cartDiv = document.getElementById('cartItems');
+  const summary = document.getElementById('cartSummary');
+
+  // If essential containers are missing, do nothing gracefully
+  if (!emptyState && !cartGrid && !cartDiv && !summary) {
     return;
   }
 
-  let total = 0;
+  if (!items.length) {
+    if (emptyState) emptyState.style.display = 'block';
+    if (cartGrid) cartGrid.style.display = 'none';
+    return;
+  }
 
+  if (emptyState) emptyState.style.display = 'none';
+  if (cartGrid) cartGrid.style.display = 'grid';
+
+  if (!cartDiv) return; // safety
+  cartDiv.innerHTML = '';
+
+  let subtotal = 0;
   items.forEach((item, index) => {
-    const itemTotal = item.price * item.quantity;
-    total += itemTotal;
+    const itemTotal = (Number(item.price) || 0) * (Number(item.quantity) || 1);
+    subtotal += itemTotal;
 
-    const div = document.createElement('div');
-    div.className = 'cart-item';
-    div.innerHTML = `
-      <h3>${item.title}</h3>
-      <img src="${item.image}" alt="${item.title}" style="max-width:100px">
-      <p>${item.description}</p>
-      <p><strong>Prix unitaire :</strong> ${item.price} FCFA</p>
-      <p><strong>Quantité :</strong> ${item.quantity}</p>
-      <p><strong>Total :</strong> ${itemTotal} FCFA</p>
-      <button  onclick="removeItem(${index})">Retirer</button>
-      <hr>
+    const firstImage = item.image || (Array.isArray(item.images) && item.images[0]) || '';
+
+    const row = document.createElement('div');
+    row.className = 'cart-row';
+    row.innerHTML = `
+      <div class="cart-media">
+        <img src="${firstImage}" alt="${item.title}">
+      </div>
+      <div class="cart-info">
+        <h3>${item.title}</h3>
+        ${item.selectedVariant ? `<p class="muted">Variante: <strong>${item.selectedVariant}</strong></p>` : ''}
+        <p class="muted">${item.description || ''}</p>
+        <button class="link danger" onclick="removeItem(${index})">Retirer</button>
+      </div>
+      <div class="cart-qty">
+        <input type="number" min="1" value="${item.quantity}" onchange="updateQty(${index}, this.value)">
+      </div>
+      <div class="cart-price">${Number(item.price) || 0} FCFA</div>
+      <div class="cart-total">${itemTotal} FCFA</div>
     `;
-    cartDiv.appendChild(div);
+    cartDiv.appendChild(row);
   });
 
-  totalDiv.innerHTML = `<h3>Total du panier : ${total} FCFA</h3>`;
-});
+  const shipping = 0; // placeholder Libre
+  const tax = 0;
+  const total = subtotal + shipping + tax;
+
+  if (!summary) return; // safety
+  summary.innerHTML = `
+    <h3>Résumé</h3>
+    <div class="summary-line"><span>Sous-total</span><span>${subtotal} FCFA</span></div>
+    <div class="summary-line"><span>Livraison estimée</span><span>Libre</span></div>
+    <div class="summary-line"><span>Estimation de l'impôt</span><span>—</span></div>
+    <div class="summary-total"><span>Total</span><span>${total} FCFA</span></div>
+    <a class="checkout-btn" href="./checkout.html">Aller à la caisse</a>
+  `;
+
+  // Render recommendations from same session(s) as items in cart
+  const sessionIds = Array.from(new Set(items.map(it => it.sessionId).filter(Boolean)));
+  if (sessionIds.length) {
+    renderRecommendationsForSessions(sessionIds, items.map(it => it._id));
+  }
+}
 
 // Supprimer un article du panier
 function removeItem(index) {
-  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const cart = getCart();
   cart.splice(index, 1);
-  localStorage.setItem('cart', JSON.stringify(cart));
-  location.reload();
+  setCart(cart);
+  renderCart();
 }
 
 // Vider complètement le panier
 function clearCart() {
   localStorage.removeItem('cart');
-  location.reload();
+  renderCart();
+}
+
+function updateQty(index, value) {
+  let qty = parseInt(value);
+  if (isNaN(qty) || qty < 1) qty = 1;
+  const cart = getCart();
+  if (!cart[index]) return;
+  cart[index].quantity = qty;
+  setCart(cart);
+  renderCart();
 }
 
 // Validation de la commande

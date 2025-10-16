@@ -25,7 +25,9 @@
 
   <!-- 🔹 Barre de navigation -->
   <nav class="navbar">
-    <div class="logo">Boutique KBR</div>
+    <div class="logo">
+      <img src="./img/Logo.jpg" alt="">
+    </div>
     <ul class="nav-links">
       <li><a href="./index.html">Produits</a></li>
       <li><a href="./cart.html"><i class="fas fa-shopping-cart"></i></a></li>
@@ -36,32 +38,26 @@
 
   <!-- 🔹 Barre de recherche -->
   <section class="search-bar">
-    <input type="text" id="searchInput" placeholder="Recherchez sur Boutique KBR...">
-
-   
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Recherchez sur Boutique KBR...">
+      <button type="button" aria-label="Rechercher"><i class="fas fa-search"></i></button>
+    </div>
   </section>
 <!-- BANNIÈRE -->
 <section class="banniere">
-  <img src="./img/banniere.jpg" alt="Bannière boutique">
+  <video class="banniere-media" autoplay muted loop playsinline>
+    <source src="./img/Vidéo-bannière .mov" type="video/mp4">
+    Votre navigateur ne supporte pas la vidéo HTML5.
+  </video>
   <div class="banniere-contenu">
-    <p>Boutique 100 % fiable – Produits vérifiés & clients satisfaits</p>
+    <p></p>
     <button><a href="#productList">En Savoir Plus</a></button>
   </div>
 </section>
 
+  <section class="sessions-grid" id="sessionsGrid"></section>
 
- <div class="banniereTexte" id="banniereTexte">
-    Bienvenue sur notre site !
-  </div>
-
-
-  <!-- 🔹 Onglets de session dynamiques -->
-  <section class="session-tabs" id="sessionTabs">
-    <!-- Onglets générés dynamiquement via JS -->
-    <!-- Exemple :
-    <button class="tab active" data-session-id="123">Vêtements</button>
-    -->
-  </section>
+  <!-- Onglets de session supprimés -->
 
   <!-- 🔹 Liste des produits -->
   <section class="product-list" id="productList">
@@ -84,7 +80,14 @@
     <button onclick="sendMessage()">Envoyer</button>
   </div>
 </div>
-  <button id="toggleChat" onclick="toggleChat()">🗨️</button>
+  <button id="toggleChat" onclick="toggleChat()" aria-label="Ouvrir le chat IA">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M7 10h10M7 14h6" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M4 12a8 8 0 1 1 14.32 4.906c-.16.238-.24.357-.296.463-.215.4-.322.6-.375.77-.06.19-.082.395-.127.803-.027.252-.04.378-.08.452a.5.5 0 0 1-.336.249c-.084.017-.212-.006-.469-.052-.42-.074-.631-.11-.826-.17-.175-.055-.37-.152-.761-.345-.104-.051-.22-.108-.456-.224A8 8 0 0 1 4 12Z" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="9" cy="9" r="1" fill="#FFFFFF"/>
+      <circle cx="15" cy="9" r="1" fill="#FFFFFF"/>
+    </svg>
+  </button>
   <div id="energy-ball"></div>
 
   <!-- FOOTER -->

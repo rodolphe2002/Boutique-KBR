@@ -22,26 +22,35 @@
 
   <!-- 🔹 Barre de navigation -->
   <nav class="navbar">
-    <div class="logo">Boutique KBR</div>
+    <div class="logo"><img src="./img/Logo.jpg" alt="Boutique KBR"></div>
     <ul class="nav-links">
       <li><a href="./index.html">Commander Autre Produit</a></li>
     </ul>
   </nav>
 
-  <h1>Votre Panier</h1>
+  <main class="main-container">
+    <h1 class="cart-title">Votre panier</h1>
 
-  <!-- Articles -->
-  <div id="cartItems"></div>
+    <section id="emptyState" class="empty-cart" style="display:none;">
+      <p>Il n'y a aucun article dans votre sac.</p>
+      <a href="./index.html">Découvrir les produits</a>
+    </section>
 
-  <!-- Total -->
-  <div id="cartTotal"></div>
-
-  <!-- Bouton pour aller à l'étape suivante -->
-  <div class="Suivant" style="margin-top: 20px;">
-    <a href="./checkout.html">
-      <button>Suivant</button>
-    </a>
-  </div>
+    <section class="cart-grid" id="cartGrid" style="display:none;">
+      <div>
+        <div id="cartItems"></div>
+        <section id="favorites" class="favorites-block">
+          <h2>Favoris</h2>
+          <p>Vous voulez voir vos favoris ? <a href="#">Rejoignez-nous</a> ou <a href="#">connectez-vous</a></p>
+        </section>
+        <section id="recommendations" class="reco-block">
+          <h2>Vous aimerez aussi</h2>
+          <div id="recoGrid" class="reco-grid"></div>
+        </section>
+      </div>
+      <aside id="cartSummary" class="summary-card"></aside>
+    </section>
+  </main>
 
   <script src="cart.js"></script>
 </body>

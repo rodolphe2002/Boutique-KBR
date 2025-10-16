@@ -14,36 +14,73 @@ async function fetchSessions() {
     const res = await fetch(`${baseUrl}/api/sessions`);
     const sessions = await res.json();
     const sessionTabs = document.getElementById('sessionTabs');
-    sessionTabs.innerHTML = '';
+    if (sessionTabs) {
+      sessionTabs.innerHTML = '';
+      sessions.forEach((session, index) => {
+        const tab = document.createElement('button');
+        tab.className = 'tab';
+        if (index === 0) tab.classList.add('active');
+        tab.textContent = session.name;
+        tab.dataset.sessionId = session._id;
 
-    sessions.forEach((session, index) => {
-      const tab = document.createElement('button');
-      tab.className = 'tab';
-      if (index === 0) tab.classList.add('active');
-      tab.textContent = session.name;
-      tab.dataset.sessionId = session._id;
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          fetchProducts(session._id);
+        });
 
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        fetchProducts(session._id);
+        sessionTabs.appendChild(tab);
       });
-
-      sessionTabs.appendChild(tab);
-    });
-
-    if (sessions.length > 0) {
-      fetchProducts(sessions[0]._id);
     }
+
+    // Render sessions grid cards
+    renderSessionsGrid(sessions);
+
+    // Do not auto-load products on index anymore
 
   } catch (error) {
     console.error('Erreur lors du chargement des sessions :', error);
   }
 }
 
+function renderSessionsGrid(sessions) {
+  const grid = document.getElementById('sessionsGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  sessions.forEach((s) => {
+    const card = document.createElement('article');
+    card.className = 'session-card';
+
+    const bgUrl = s.image ? s.image : './img/banniere.jpg';
+    card.style.backgroundImage = `url('${bgUrl}')`;
+
+    card.innerHTML = `
+      <div class="session-overlay">
+        <p class="session-subtitle">${s.name}</p>
+        <h3 class="session-title">Découvrez ${s.name}</h3>
+        <button class="session-cta" data-session-id="${s._id}">Acheter</button>
+      </div>
+    `;
+
+    const btn = card.querySelector('.session-cta');
+    const navigate = () => {
+      window.location.href = `./session.html?sessionId=${encodeURIComponent(s._id)}`;
+    };
+    btn.addEventListener('click', navigate);
+    card.addEventListener('click', (e) => {
+      if (!(e.target && e.target.classList && e.target.classList.contains('session-cta'))) {
+        navigate();
+      }
+    });
+
+    grid.appendChild(card);
+  });
+}
+
 async function fetchProducts(sessionId) {
   try {
-    const res = await fetch(`${baseUrl}/api/products?sessionId=${sessionId}`);
+    const res = await fetch(`${baseUrl}/api/products?sessionId=${sessionId}&_=${Date.now()}`);
     const products = await res.json();
     currentProducts = products;
 
@@ -53,17 +90,57 @@ async function fetchProducts(sessionId) {
     products.forEach((product, index) => {
       const card = document.createElement('div');
       card.className = 'product-card';
+      const gallery = Array.isArray(product.images) ? product.images : [];
+      const base = product.image ? [product.image] : [];
+      // Merge unique URLs to ensure we show both main image and gallery
+      const imagesArr = Array.from(new Set([...base, ...gallery]));
+      if (imagesArr.length === 0) imagesArr.push('');
+      const primaryImage = imagesArr[0];
+      const chips = Array.isArray(product.variants) && product.variants.length > 0
+        ? `<div class="variant-chips" title="${product.variantType || ''}">` +
+            product.variants.map(v => `<span class="chip">${v}</span>`).join('') +
+          `</div>`
+        : '';
 
       card.innerHTML = `
-        <img src="${product.image}" alt="${product.title}">
+        <div class="product-gallery">
+          <img class="main-image" src="${primaryImage}" alt="${product.title}">
+          <div class="thumbs">
+            ${imagesArr.map((src, i) => `<img src="${src}" alt="${product.title} ${i+1}" class="${i===0?'active':''}" data-idx="${i}">`).join('')}
+          </div>
+        </div>
         <h3>${product.title}</h3>
         <p>${product.description}</p>
+        ${chips}
         <p><strong>${product.price} FCFA</strong></p>
         <label>Quantité :
           <input type="number" id="qty-${index}" min="1" value="1" style="width: 60px;">
         </label>
         <button onclick="addToCart(${index})">Commander</button>
       `;
+
+      // Thumbnails click -> switch main image
+      const mainImg = card.querySelector('.main-image');
+      card.querySelectorAll('.thumbs img').forEach((imgEl) => {
+        imgEl.addEventListener('click', () => {
+          mainImg.src = imgEl.src;
+          card.querySelectorAll('.thumbs img').forEach(e => e.classList.remove('active'));
+          imgEl.classList.add('active');
+        });
+      });
+
+      // Variant selection -> toggle active and store on product temp field
+      const chipEls = card.querySelectorAll('.variant-chips .chip');
+      if (chipEls.length) {
+        chipEls.forEach((chip) => {
+          chip.addEventListener('click', () => {
+            chipEls.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            // Save chosen variant on client state
+            currentProducts[index].selectedVariant = chip.textContent.trim();
+          });
+        });
+      }
 
       productList.appendChild(card);
     });
@@ -85,7 +162,7 @@ function addToCart(index) {
 
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-  cart.push({ ...product, quantity });
+  cart.push({ ...product, quantity, selectedVariant: product.selectedVariant || null });
 
   localStorage.setItem('cart', JSON.stringify(cart));
   window.location.href = 'cart.html';
@@ -117,39 +194,52 @@ function performSearch(query) {
   filtered.forEach((product, index) => {
     const card = document.createElement('div');
     card.className = 'product-card';
+    const imagesArr = (product.images && product.images.length > 0) ? product.images : [product.image];
+    const primaryImage = imagesArr[0];
+    const chips = Array.isArray(product.variants) && product.variants.length > 0
+      ? `<div class="variant-chips" title="${product.variantType || ''}">` +
+          product.variants.map(v => `<span class=\"chip\">${v}</span>`).join('') +
+        `</div>`
+      : '';
 
     card.innerHTML = `
-      <img src="${product.image}" alt="${product.title}">
+      <div class="product-gallery">
+        <img class="main-image" src="${primaryImage}" alt="${product.title}">
+        <div class="thumbs">
+          ${imagesArr.map((src, i) => `<img src="${src}" alt="${product.title} ${i+1}" class="${i===0?'active':''}" data-idx="${i}">`).join('')}
+        </div>
+      </div>
       <h3>${product.title}</h3>
       <p>${product.description}</p>
+      ${chips}
       <p><strong>${product.price} FCFA</strong></p>
       <label>Quantité :
         <input type="number" id="qty-${index}" min="1" value="1" style="width: 60px;">
       </label>
       <button onclick="addToCart(${index})">Commander</button>
     `;
+    // thumbnails behavior
+    const mainImg = card.querySelector('.main-image');
+    card.querySelectorAll('.thumbs img').forEach((imgEl) => {
+      imgEl.addEventListener('click', () => {
+        mainImg.src = imgEl.src;
+        card.querySelectorAll('.thumbs img').forEach(e => e.classList.remove('active'));
+        imgEl.classList.add('active');
+      });
+    });
+
+    // variant behavior
+    const chipEls = card.querySelectorAll('.variant-chips .chip');
+    if (chipEls.length) {
+      chipEls.forEach((chip) => {
+        chip.addEventListener('click', () => {
+          chipEls.forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          product.selectedVariant = chip.textContent.trim();
+        });
+      });
+    }
 
     productList.appendChild(card);
   });
 }
-
-
-
-
-    // Tableau de messages à afficher
-    const messages = [
-
-      "Livraison rapide disponible à Abidjan !",
-      "Promo : jusqu'à -20% sur les articles sélectionnés !",
-      "Besoin d’aide ? Appelez-nous au 05 02 32 99 09 ou écrivez-nous sur WhatsApp au 05 65 69 93 58.",
-      "Nouveaux produits ajoutés chaque jour !"
-    ];
-
-    let index = 0;
-    const banniere = document.getElementById("banniereTexte");
-
-    // Changer le message toutes les secondes
-    setInterval(() => {
-      banniere.textContent = messages[index];
-      index = (index + 1) % messages.length; // Boucle infinie
-    }, 2000);

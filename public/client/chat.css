@@ -15,8 +15,8 @@
 }
 body {
   font-family: 'Segoe UI', sans-serif;
-  background-color: var(--gris);
-  color: var(--noir);
+  background-color: #FFFFFF;
+  color: #111111;
 }
 
 /* ===== Chat Widget ===== */

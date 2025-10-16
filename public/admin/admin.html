@@ -22,6 +22,7 @@
   <section id="create-session" class="admin-section">
     <h2>Créer une session</h2>
     <input type="text" id="sessionName" placeholder="Nom de la session" />
+    <input type="file" id="sessionImage" accept="image/*" />
     <button onclick="createSession()">Créer</button>
     <div id="sessionMessage"></div>
   </section>
@@ -32,8 +33,19 @@
     <input type="text" id="productTitle" placeholder="Titre" />
     <textarea id="productDescription" placeholder="Description"></textarea>
     <input type="number" id="productPrice" placeholder="Prix" />
-    <input type="file" id="productImage" />
-    <button onclick="addProduct()">Ajouter</button>
+    <label>Images du produit (sélection multiple autorisée)</label>
+    <input type="file" id="productImages" accept="image/*" multiple />
+    <small>Actuellement, seule la première image est envoyée au serveur. On activera la galerie complète dès que le backend sera prêt.</small>
+
+    <div style="margin-top:10px"></div>
+    <label for="variantType">Type de variantes</label>
+    <select id="variantType">
+      <option value="none">Aucune</option>
+      <option value="tailles">Tailles</option>
+      <option value="pointures">Pointures</option>
+    </select>
+    <input type="text" id="variantValues" placeholder="Valeurs séparées par des virgules (ex: S,M,L ou 40,41,42)" />
+    <button id="addProductBtn" onclick="addProduct()">Ajouter</button>
     <div id="productMessage"></div>
   </section>
 
