@@ -14,6 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
   initSessionPage(sessionId);
 });
 
+function truncateWords(text, maxWords = 5) {
+  if (!text || typeof text !== 'string') return '';
+  const parts = text.trim().split(/\s+/).filter(Boolean);
+  if (parts.length <= maxWords) return parts.join(' ');
+  return parts.slice(0, maxWords).join(' ') + '…';
+}
+
 async function initSessionPage(sessionId) {
   try {
     // Load session meta (name, image) from the list
@@ -61,7 +68,7 @@ async function fetchProducts(sessionId) {
       card.innerHTML = `
         <img class="main-image" src="${imgSrc}" alt="${product.title}">
         <h3>${product.title}</h3>
-        <p>${product.description}</p>
+        <p>${truncateWords(product.description || '', 5)}</p>
         <p><strong>${product.price} FCFA</strong></p>
       `;
       card.style.cursor = 'pointer';
@@ -131,7 +138,7 @@ function performSearch(query) {
         </div>
       </div>
       <h3>${product.title}</h3>
-      <p>${product.description}</p>
+      <p>${truncateWords(product.description || '', 5)}</p>
       ${chips}
       <p><strong>${product.price} FCFA</strong></p>
       <label>Quantité :
