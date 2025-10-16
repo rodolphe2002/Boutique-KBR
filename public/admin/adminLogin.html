@@ -21,25 +21,33 @@
   </form>
 
   <script>
+    const baseUrl = window.location.hostname === 'localhost'
+      ? 'http://localhost:3000/api'
+      : 'https://boutique-kbr.onrender.com/api';
+
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
-
-      const res = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-
-      const data = await res.json();
-      alert(data.message);
-
-      if (res.ok) {
-        localStorage.setItem('adminToken', data.token);
-        window.location.href = './admin.html'; // Rediriger après connexion
+      try {
+        const res = await fetch(`${baseUrl}/admin/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const ct = res.headers.get('content-type') || '';
+        const payload = ct.includes('application/json') ? await res.json() : { message: await res.text() };
+        if (!res.ok) {
+          alert(payload.message || `Erreur ${res.status}`);
+          return;
+        }
+        alert(payload.message || 'Connexion réussie');
+        localStorage.setItem('adminToken', payload.token);
+        window.location.href = './admin.html';
+      } catch (err) {
+        alert('Erreur réseau lors de la connexion.');
+        console.error(err);
       }
-      
     });
   </script>
 </body>
