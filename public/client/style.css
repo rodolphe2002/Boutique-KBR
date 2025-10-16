@@ -823,6 +823,8 @@ body {
   padding: 1rem 2rem 2rem;
   max-width: 1400px;
   margin: 0 auto;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
 }
 
 .session-card {
@@ -927,7 +929,7 @@ body {
   width: calc(100% - 4rem);
   height: 500px;
   overflow: hidden;
-  border-radius: 20px;
+  border: none !important;
   margin: 2rem auto;
   box-shadow: var(--shadow-lg);
   transform-style: preserve-3d;
@@ -1267,7 +1269,7 @@ body {
   
   .banniere {
     height: 300px;
-    border-radius: 12px;
+   
   }
   
   .banniere-contenu p {
