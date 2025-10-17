@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Commande - Infos Client</title>
+  <title>Finaliser la commande</title>
   <link rel="stylesheet" href="./cart.css" />
   <link rel="icon" href="./img/WhatsApp Image 2025-05-24 à 22.52.58_10ea0336.jpg" />
 </head>
@@ -15,39 +15,86 @@
   <nav class="navbar">
     <div class="logo"><img src="./img/Logo.jpg" alt="Boutique KBR"></div>
     <ul class="nav-links">
-      <li><a href="./index.html"> Voir Les Produits</a></li>
+      <li><a href="./index.html">Voir les produits</a></li>
       <li><a href="./cart.html">Retour au panier</a></li>
     </ul>
   </nav>
 
-  <h2>Informations client</h2>
+  <main class="main-container">
+    <h2>Finaliser la commande</h2>
 
-  <label for="clientName">Nom complet :</label><br>
-  <input type="text" id="clientName" placeholder="Votre nom"><br><br>
+    <div class="cart-grid">
+      <!-- Colonne gauche: formulaire client -->
+      <section class="client-form" aria-label="Informations client">
+        <div class="form-group">
+          <label for="clientName">Nom complet</label>
+          <input type="text" id="clientName" placeholder="Votre nom et prénom" autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label for="clientPhone">Téléphone</label>
+          <input type="text" id="clientPhone" placeholder="Votre numéro de téléphone" inputmode="tel" autocomplete="tel" />
+        </div>
+        <div class="form-group">
+          <label for="clientAddress">Adresse</label>
+          <textarea id="clientAddress" placeholder="Votre adresse complète" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+          <button onclick="validateOrder()">Valider la commande</button>
+        </div>
+      </section>
 
-  <label for="clientPhone">Téléphone :</label><br>
-  <input type="text" id="clientPhone" placeholder="Votre numéro de téléphone"><br><br>
+      <!-- Colonne droite: résumé -->
+      <aside class="summary-card" aria-label="Résumé de la commande" id="checkoutSummary">
+        <!-- Rendu dynamique ci-dessous -->
+      </aside>
+    </div>
+  </main>
 
-  <label for="clientAddress">Adresse :</label><br>
-  <textarea id="clientAddress" placeholder="Votre adresse complète" rows="3"></textarea><br><br>
-
-  <!-- Bouton de validation -->
-  <button onclick="validateOrder()">Valider la commande</button>
-
-
-
-  <!-- ✅ Popup de confirmation -->
+ <!-- ✅ Popup de confirmation -->
 <div id="orderSuccessPopup" style="display: none;" class="popup-overlay">
   <div class="popup-content">
-    <h2>Merci pour votre commande !</h2>
-    <p>Votre commande a été enregistrée avec succès.</p>
-    <p>Elle sera livrée dans les plus brefs délais.</p>
-    <p>Vous allez être redirigé vers nos produits...</p>
-    <button onclick="redirectNow()">Aller maintenant</button>
+    <h2>🎉 Commande confirmée avec succès !</h2>
+    <p>Merci d’avoir choisi <strong>Boutique KBR</strong> 💎</p>
+    <p>Votre commande est bien enregistrée et sera préparée avec le plus grand soin.</p>
+    <p>Nous vous tiendrons informé(e) dès qu’elle sera expédiée.</p>
+    <p>En attendant, découvrez nos autres articles exclusifs 👇</p>
+    <button onclick="redirectNow()">Découvrir plus de produits</button>
   </div>
 </div>
 
-
   <script src="cart.js"></script>
+  <script>
+    // Petit rendu du résumé à partir du panier local
+    (function(){
+      const el = document.getElementById('checkoutSummary');
+      if (!el) return;
+      const items = JSON.parse(localStorage.getItem('cart')||'[]');
+      if (!items.length) {
+        el.innerHTML = '<h3>Résumé</h3><p>Votre panier est vide.</p>';
+        return;
+      }
+      let subtotal = 0;
+      const list = items.map(it => {
+        const qty = Number(it.quantity)||1;
+        const price = Number(it.price)||0;
+        const line = qty * price;
+        subtotal += line;
+        return `<div style="display:flex; justify-content:space-between; gap:8px; padding:.35rem 0;">
+          <span style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${it.title} × ${qty}</span>
+          <span><strong>${line} FCFA</strong></span>
+        </div>`;
+      }).join('');
+      const total = subtotal; // pas de frais pour l'instant
+      el.innerHTML = `
+        <h3>Résumé</h3>
+        <div>${list}</div>
+        <div class="summary-total" style="margin-top:.5rem; border-top:1px solid rgba(0,0,0,.08); padding-top:.5rem; display:flex; justify-content:space-between;">
+          <span>Total</span><span>${total} FCFA</span>
+        </div>
+      `;
+    })();
+
+    function redirectNow(){ window.location.href = './index.html'; }
+  </script>
 </body>
 </html>

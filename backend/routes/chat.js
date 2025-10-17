@@ -73,6 +73,26 @@ const systemPrompt = `Tu es **KBR AI**, l’assistant virtuel de la Boutique KBR
 🎬 Prêt ? Tu vas maintenant répondre selon les données suivantes :
 `;
 
+// Construit un résumé compact du contexte envoyé par le client (sessions & produits récents)
+function buildContextSummary(context = {}) {
+  try {
+    const sessions = Array.isArray(context.sessions) ? context.sessions.slice(0, 12) : [];
+    const recent = Array.isArray(context.recent) ? context.recent.slice(0, 12) : [];
+
+    const sessionsText = sessions.length
+      ? sessions.map(s => `- ${s.name} (id:${s.id || s._id || ''})`).join('\n')
+      : 'aucune';
+
+    const recentText = recent.length
+      ? recent.map(p => `- ${p.title} — ${p.price} FCFA (id:${p.id || p._id || ''}, session:${p.sessionId || 'n/a'})`).join('\n')
+      : 'aucun';
+
+    return `SESSIONS DISPONIBLES:\n${sessionsText}\n\nPRODUITS RECENTS:\n${recentText}`;
+  } catch {
+    return 'Contexte indisponible';
+  }
+}
+
 async function repondreProduitsDisponibles() {
   const produits = await Product.find();
 
@@ -90,7 +110,7 @@ async function repondreProduitsDisponibles() {
 
 
 router.post("/", async (req, res) => {
-  const { sessionId, userMessage } = req.body;
+  const { sessionId, userMessage, context } = req.body;
 
   if (!sessionId || !userMessage) {
     return res.status(400).json({ result: "sessionId et userMessage sont requis." });
@@ -147,8 +167,9 @@ router.post("/", async (req, res) => {
       }
     }
 
+    const ctxSummary = buildContextSummary(context);
     const messages = [
-      { role: "system", content: `${systemPrompt}\n\nDonnées produits :\n${dbInfo}` },
+      { role: "system", content: `${systemPrompt}\n\nDonnées produits :\n${dbInfo}\n\nContexte client fourni :\n${ctxSummary}` },
       ...conversations[sessionId]
     ];
 

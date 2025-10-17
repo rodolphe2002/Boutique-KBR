@@ -7,6 +7,15 @@ body {
   font-family: "Helvetica Neue", Helvetica, Arial, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   font-weight: 400;
 }
+
+/* ===== Force larger color dots on mobile (override later base) ===== */
+@media (max-width: 640px) {
+  .color-dots--selectable .color-dot.selectable {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  .color-dots--selectable { gap: 10px !important; }
+}
 h1, h2, h3, h4, h5, h6,
 .dash-title,
 .recent-title,
@@ -75,17 +84,21 @@ strong, b,
 .recent-scroller::-webkit-scrollbar { height: 8px; }
 .recent-scroller::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
 .recent-card {
+  position: relative;
   background: #FFFFFF;
   border: 1px solid rgba(0,0,0,0.06);
   border-radius: 16px;
   overflow: hidden;
   scroll-snap-align: start;
+  aspect-ratio: 1 / 1; /* image takes full card */
 }
 .recent-card img {
-  width: 100%; height: 180px; object-fit: cover; display: block;
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover; display: block;
 }
 .recent-card .rc-title {
-  display: inline-block; margin: 10px; padding: 6px 12px; background: #F3F4F6; border-radius: 999px;
+  position: absolute; left: 10px; bottom: 10px; z-index: 2;
+  display: inline-block; padding: 6px 12px; background: rgba(243,244,246,0.9); border-radius: 999px;
   font-weight: 700; color: #111111; font-size: 0.95rem;
 }
 
@@ -93,7 +106,8 @@ strong, b,
   .recent-products { padding: 0 1rem; }
   .recent-title { font-size: 1.6rem; }
   .recent-scroller { grid-auto-columns: 72%; gap: 0.75rem; }
-  .recent-card img { height: 160px; }
+  .recent-card { aspect-ratio: 1 / 1; }
+  .recent-card img { height: 100% !important; width: 100%; object-fit: cover; }
 }
 
 /* Product detail thumbnail selection animation */
@@ -252,6 +266,10 @@ strong, b,
   font-weight: 400; /* Regular */
   color: #333333;
   margin-bottom: 0.75rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  font-size: 1.05rem;
+  line-height: 1.7;
 }
 
 .product-detail-grid .product-price {
@@ -314,6 +332,22 @@ strong, b,
   }
 }
 
+/* Mobile stability for product detail */
+@media (max-width: 640px) {
+  .product-detail-grid { gap: 14px; padding: 0 12px; overflow-x: hidden; }
+  .product-detail-grid .product-media { min-width: 0; }
+  .product-detail-grid .product-info { min-width: 0; }
+  .product-detail-grid .product-media .main-image { aspect-ratio: 1 / 1; width: 100%; height: auto; object-fit: cover; border-radius: 12px; }
+  .thumbs { gap: 8px; padding: 4px 0; }
+  .product-actions { gap: 10px; }
+  /* Bigger color dots on product detail */
+  .color-dots--selectable .color-dot.selectable { width: 50px; height: 50px; }
+  .color-dots--selectable .color-dot.selectable.active { box-shadow: 0 0 0 4px rgba(0,0,0,.12); transform: scale(1.25); }
+}
+
+/* Ensure images don't overflow in product detail */
+.product-detail img { max-width: 100%; height: auto; display: block; }
+
 .thumbs {
   display: flex;
   gap: 0.5rem;
@@ -344,9 +378,9 @@ strong, b,
 .variant-chips .chip {
   background: #F3F4F6;
   color: #111111;
-  padding: .55rem .8rem;
+  padding: .6rem .9rem;
   border-radius: 10px;
-  font-size: .95rem;
+  font-size: 1rem;
   font-weight: 600;
   border: 1px solid rgba(0,0,0,0.12);
   cursor: pointer;
@@ -360,8 +394,8 @@ strong, b,
 }
 
 /* Header title + price */
-.product-info .product-title { font-size: 2rem; font-weight: 800; margin-bottom: .25rem; }
-.product-info .product-price { font-size: 1.5rem; font-weight: 800; margin: .75rem 0 1rem; }
+.product-info .product-title { font-size: 2.6rem; font-weight: 800; margin-bottom: .35rem; }
+.product-info .product-price { font-size: 1.8rem; font-weight: 800; margin: .85rem 0 1.1rem; }
 
 /* CTAs */
 .product-actions { flex-wrap: wrap; }
@@ -375,6 +409,7 @@ strong, b,
   font-weight: 700;
   border: 1.5px solid rgba(0,0,0,0.15);
   cursor: pointer;
+  font-size: 1rem;
 }
 .product-actions .cta-secondary:hover { background: #F9FAFB; }
 
@@ -387,7 +422,9 @@ strong, b,
 
 @media (max-width: 992px) {
   .thumbs img { width: 64px; height: 64px; }
-  .product-info .product-title { font-size: 1.6rem; }
+  .product-info .product-title { font-size: 2rem; }
+  .product-info .product-price { font-size: 1.6rem; }
+  .product-detail-grid .product-desc { font-size: 1rem; }
 }
 * {
   margin: 0;

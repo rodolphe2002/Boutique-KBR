@@ -12,7 +12,12 @@
   <div id="chat-body"></div>
   <div id="chat-input">
     <input type="text" id="userMessage" placeholder="Posez votre question...">
-    <button onclick="sendMessage()">Envoyer</button>
+    <button onclick="sendMessage()" aria-label="Envoyer le message">
+      <svg class="send-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </button>
   </div>
 </div>
 
