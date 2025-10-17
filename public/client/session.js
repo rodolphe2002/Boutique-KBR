@@ -21,6 +21,18 @@ function truncateWords(text, maxWords = 5) {
   return parts.slice(0, maxWords).join(' ') + '…';
 }
 
+function renderColorDots(colors) {
+  if (!Array.isArray(colors) || colors.length === 0) return '';
+  const max = 6;
+  const shown = colors.slice(0, max);
+  const more = colors.length - shown.length;
+  const dots = shown
+    .map(c => `<span class="color-dot" title="${c}" style="background:${c}"></span>`)
+    .join('');
+  const moreTxt = more > 0 ? `<span class="color-more">+${more}</span>` : '';
+  return `<div class="color-dots">${dots}${moreTxt}</div>`;
+}
+
 async function initSessionPage(sessionId) {
   try {
     // Load session meta (name, image) from the list
@@ -65,10 +77,12 @@ async function fetchProducts(sessionId) {
       const card = document.createElement('div');
       card.className = 'product-card';
       const imgSrc = product.image || (Array.isArray(product.images) && product.images[0]) || '';
+      const colorDots = renderColorDots(product.colors);
       card.innerHTML = `
         <img class="main-image" src="${imgSrc}" alt="${product.title}">
         <h3>${product.title}</h3>
         <p>${truncateWords(product.description || '', 5)}</p>
+        ${colorDots}
         <p><strong>${product.price} FCFA</strong></p>
       `;
       card.style.cursor = 'pointer';
@@ -125,6 +139,7 @@ function performSearch(query) {
     const base = product.image ? [product.image] : [];
     const imagesArr = Array.from(new Set([...base, ...gallery]));
     const primaryImage = imagesArr[0] || '';
+    const colorDots = renderColorDots(product.colors);
     const chips = Array.isArray(product.variants) && product.variants.length > 0
       ? `<div class="variant-chips" title="${product.variantType || ''}">` +
           product.variants.map(v => `<span class=\"chip\">${v}</span>`).join('') +
@@ -140,6 +155,7 @@ function performSearch(query) {
       <h3>${product.title}</h3>
       <p>${truncateWords(product.description || '', 5)}</p>
       ${chips}
+      ${colorDots}
       <p><strong>${product.price} FCFA</strong></p>
       <label>Quantité :
         <input type="number" id="qty-${index}" min="1" value="1" style="width: 60px;">

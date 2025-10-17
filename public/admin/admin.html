@@ -2,80 +2,213 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>KBR Tableau de bord Admin</title>
   <link rel="stylesheet" href="./admin.css" /> 
-  <link rel="icon" type="image/svg+xml" href="../client/img/WhatsApp Image 2025-05-24 à 22.52.58_10ea0336.jpg" />
+  <link rel="icon" type="image/svg+xml" href="../client/img/WhatsApp Image 2025-05-24 à 22.52.58_10ea0336.jpg" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
-  <h1>Tableau de bord Admin</h1>
-    <button id="logoutBtn" class="logout-button">Déconnexion</button> 
+  <div class="admin-dashboard">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="brand">KBR</div>
+      <ul class="side-nav">
+        <li><button class="side-link" onclick="showSection('dashboard-home')" title="Accueil"><i class="fa-solid fa-house"></i></button></li>
+        <li><button class="side-link" onclick="showSection('create-session')" title="Créer une session"><i class="fa-solid fa-layer-group"></i></button></li>
+        <li><button class="side-link" onclick="showSection('create-product')" title="Créer un produit"><i class="fa-solid fa-box"></i></button></li>
+        <li><button class="side-link" onclick="showSection('manage-sessions')" title="Gérer les sessions"><i class="fa-solid fa-list"></i></button></li>
+        <li><button class="side-link" onclick="showSection('manage-products')" title="Gérer les produits"><i class="fa-solid fa-boxes-stacked"></i></button></li>
+        <li><button class="side-link" onclick="showSection('orders')" title="Commandes"><i class="fa-solid fa-receipt"></i></button></li>
+      </ul>
+      <div class="side-bottom">
+        <button id="logoutBtn" class="logout-button" title="Déconnexion"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+      </div>
+    </aside>
 
-  <nav>
-    <button onclick="showSection('create-session')">Créer une session</button>
-    <button onclick="showSection('create-product')">Créer un produit</button>
-      <button onclick="showSection('manage-sessions')">Gérer les sessions</button>
-  <button onclick="showSection('manage-products')">Gérer les produits</button>
-    <button onclick="showSection('orders')">Commandes</button>
-  </nav>
+    <!-- Main area -->
+    <div class="admin-main">
+      <!-- Topbar -->
+      <header class="admin-topbar">
+        <h1 class="dash-title">Dashboard</h1>
+        <div class="top-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="search" placeholder="Rechercher..." />
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn" title="Nouveau"><i class="fa-solid fa-plus"></i></button>
+          <button class="icon-btn notif-btn" id="notifBtn" title="Notifications">
+            <i class="fa-regular fa-bell"></i>
+            <span id="notifBadge" class="notif-badge" hidden>0</span>
+          </button>
+          <div class="avatar" title="Admin"></div>
+        </div>
+      </header>
 
-  <section id="create-session" class="admin-section">
-    <h2>Créer une session</h2>
-    <input type="text" id="sessionName" placeholder="Nom de la session" />
-    <input type="file" id="sessionImage" accept="image/*" />
-    <button onclick="createSession()">Créer</button>
-    <div id="sessionMessage"></div>
-  </section>
+      <!-- Content grid -->
+      <div class="admin-grid">
+        <div class="admin-left">
+          <nav class="admin-tabs">
+            <button data-section="dashboard-home" onclick="showSection('dashboard-home')">Accueil</button>
+            <button data-section="create-session" onclick="showSection('create-session')">Créer une session</button>
+            <button data-section="create-product" onclick="showSection('create-product')">Créer un produit</button>
+            <button data-section="manage-sessions" onclick="showSection('manage-sessions')">Gérer les sessions</button>
+            <button data-section="manage-products" onclick="showSection('manage-products')">Gérer les produits</button>
+            <button data-section="orders" onclick="showSection('orders')">Commandes</button>
+          </nav>
 
-  <section id="create-product" class="admin-section" style="display: none;">
-    <h2>Ajouter un produit</h2>
-    <select id="sessionSelect"></select>
-    <input type="text" id="productTitle" placeholder="Titre" />
-    <textarea id="productDescription" placeholder="Description"></textarea>
-    <input type="number" id="productPrice" placeholder="Prix" />
-    <label>Images du produit (sélection multiple autorisée)</label>
-    <input type="file" id="productImages" accept="image/*" multiple />
-    <small>Actuellement, seule la première image est envoyée au serveur. On activera la galerie complète dès que le backend sera prêt.</small>
+          <section id="dashboard-home" class="admin-section">
+            <h2>Accueil</h2>
+            <div id="stats">
+              <div class="kpi-grid">
+                <div class="kpi-card">
+                  <div class="kpi-head">Total des commandes</div>
+                  <div class="kpi-value" id="kpiTotalOrders">0</div>
+                  <canvas id="miniChartTotal" height="90"></canvas>
+                </div>
+                <div class="kpi-card">
+                  <div class="kpi-head">Commandes livrées</div>
+                  <div class="kpi-value" id="kpiDelivered">0</div>
+                  <canvas id="miniChartDelivered" height="90"></canvas>
+                </div>
+                <div class="kpi-card">
+                  <div class="kpi-head">Commandes annulées</div>
+                  <div class="kpi-value" id="kpiCancelled">0</div>
+                  <canvas id="miniChartCancelled" height="90"></canvas>
+                </div>
+                <div class="kpi-card">
+                  <div class="kpi-head">Total des ventes</div>
+                  <div class="kpi-value" id="kpiTotalSales">0 FCFA</div>
+                  <canvas id="miniChartSales" height="90"></canvas>
+                </div>
+              </div>
 
-    <div style="margin-top:10px"></div>
-    <label for="variantType">Type de variantes</label>
-    <select id="variantType">
-      <option value="none">Aucune</option>
-      <option value="tailles">Tailles</option>
-      <option value="pointures">Pointures</option>
-    </select>
-    <input type="text" id="variantValues" placeholder="Valeurs séparées par des virgules (ex: S,M,L ou 40,41,42)" />
-    <button id="addProductBtn" onclick="addProduct()">Ajouter</button>
-    <div id="productMessage"></div>
-  </section>
+              <div class="charts-grid">
+                <div class="chart-card">
+                  <h3>Répartition des statuts</h3>
+                  <canvas id="statusChart"></canvas>
+                </div>
+                <div class="chart-card">
+                  <h3>Ventes mensuelles</h3>
+                  <canvas id="productsChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </section>
 
-  <section id="orders" class="admin-section" style="display: none;">
-    <h2>Commandes clients</h2>
-    <!-- <canvas id="ordersChart" width="400" height="200"></canvas> -->
+          <section id="create-session" class="admin-section" style="display: none;">
+            <h2>Créer une session</h2>
+            <div class="form-card">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="sessionName">Nom de la session</label>
+                  <input type="text" id="sessionName" placeholder="Ex: Nouveautés Sneakers" />
+                </div>
+                <div class="form-group">
+                  <label for="sessionImage">Image de couverture</label>
+                  <div class="uploader">
+                    <input type="file" id="sessionImage" accept="image/*" />
+                    <div class="form-help">JPEG/PNG, recommandé ≥ 1200×600px</div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button id="createSessionBtn" class="btn" onclick="createSession()">Créer</button>
+              </div>
+              <div id="sessionMessage"></div>
+            </div>
+          </section>
 
-  <div id="stats" style="display: none;">
-  <p>Total des commandes : <span id="totalOrders">0</span></p>
-  <p>Commandes livrées : <span id="deliveredOrders">0</span></p>
-  <p>Commandes annulées : <span id="cancelledOrders">0</span></p>
-  <p>Total des ventes : <span id="totalSales">0 FCFA</span></p>
-  <canvas id="productsChart" width="400" height="200"></canvas>
-</div>
+          <section id="create-product" class="admin-section" style="display: none;">
+            <h2>Ajouter un produit</h2>
+            <div class="form-card">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="sessionSelect">Session</label>
+                  <select id="sessionSelect"></select>
+                </div>
+                <div class="form-group">
+                  <label for="productTitle">Titre</label>
+                  <input type="text" id="productTitle" placeholder="Nom du produit" />
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                  <label for="productDescription">Description</label>
+                  <textarea id="productDescription" placeholder="Décrivez le produit"></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="productPrice">Prix</label>
+                  <input type="number" id="productPrice" placeholder="Ex: 15000" />
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                  <label for="productImages">Images (sélection multiple)</label>
+                  <div class="uploader">
+                    <input type="file" id="productImages" accept="image/*" multiple />
+                    <div class="form-help">Jusqu'à 10 images. La première est l'image principale.</div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="variantType">Type de variantes</label>
+                  <select id="variantType">
+                    <option value="none">Aucune</option>
+                    <option value="tailles">Tailles</option>
+                    <option value="pointures">Pointures</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="variantValues">Valeurs</label>
+                  <input type="text" id="variantValues" placeholder="Ex: S,M,L ou 40,41,42" />
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                  <label for="colorPicker">Couleurs disponibles (optionnel)</label>
+                  <div style="display:flex; align-items:center; gap:8px; margin:6px 0;">
+                    <input type="color" id="colorPicker" value="#000000" />
+                    <button type="button" id="addColorBtn">Ajouter couleur</button>
+                  </div>
+                  <div id="colorList" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;"></div>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button id="addProductBtn" class="btn" onclick="addProduct()">Ajouter</button>
+              </div>
+              <div id="productMessage"></div>
+            </div>
+          </section>
 
+          <section id="orders" class="admin-section" style="display: none;">
+            <h2>Commandes clients</h2>
+            <ul id="orderList"></ul>
+          </section>
 
-    <ul id="orderList"></ul>
-  </section>
+          <section id="manage-sessions" class="admin-section" style="display: none;">
+            <h2>Gérer les sessions</h2>
+            <ul id="sessionList"></ul>
+          </section>
 
-  <section id="manage-sessions" class="admin-section" style="display: none;">
-  <h2>Gérer les sessions</h2>
-  <ul id="sessionList"></ul>
-</section>
+          <section id="manage-products" class="admin-section" style="display: none;">
+            <h2>Gérer les produits</h2>
+            <ul id="productList"></ul>
+          </section>
+        </div>
 
-<section id="manage-products" class="admin-section" style="display: none;">
-  <h2>Gérer les produits</h2>
-  <ul id="productList"></ul>
-</section>
-
-
+        <aside class="admin-right">
+          <div class="card lite">
+            <h3>Progression du compte</h3>
+            <div class="progress-ring">
+              <div class="ring"><span>70%</span></div>
+              <div class="bar"></div>
+            </div>
+          </div>
+          <div class="card lite">
+            <h3>Raccourcis</h3>
+            <ul class="shortcuts">
+              <li><button onclick="showSection('create-product')"><i class="fa-solid fa-plus"></i> Nouveau produit</button></li>
+              <li><button onclick="showSection('orders')"><i class="fa-solid fa-receipt"></i> Voir commandes</button></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="./apiAdmin.js"></script>

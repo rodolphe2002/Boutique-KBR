@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Recherche - Boutique KBR</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="icon" type="image/svg+xml" href="./img/WhatsApp Image 2025-05-24 à 22.52.58_10ea0336.jpg" />
+</head>
+<body>
+  <header class="search-header">
+    <div class="search-header-bar">
+      <i class="fas fa-search"></i>
+      <input type="text" id="q" placeholder="Recherchez sur Boutique KBR..." autocomplete="off" />
+    </div>
+    <button id="cancelSearch" class="btn-cancel">Annuler</button>
+  </header>
+
+  <main class="search-results" id="searchResults" aria-live="polite"></main>
+
+  <script src="./search.js"></script>
+</body>
+</html>

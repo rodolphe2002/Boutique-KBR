@@ -29,7 +29,8 @@
       <img src="./img/Logo.jpg" alt="">
     </div>
     <ul class="nav-links">
-      <li><a href="./index.html">Produits</a></li>
+      <li></li>
+      <li><button id="searchToggle" class="nav-icon" aria-label="Rechercher"><i class="fas fa-search"></i></button></li>
       <li><a href="./cart.html"><i class="fas fa-shopping-cart"></i></a></li>
 
       <!-- <li><a href="#chat-widget">Assistance IA</a></li> -->
@@ -37,7 +38,7 @@
   </nav>
 
   <!-- 🔹 Barre de recherche -->
-  <section class="search-bar">
+  <section class="search-bar" id="collapsibleSearch">
     <div class="search-container">
       <input type="text" id="searchInput" placeholder="Recherchez sur Boutique KBR...">
       <button type="button" aria-label="Rechercher"><i class="fas fa-search"></i></button>
@@ -56,6 +57,47 @@
 </section>
 
   <section class="sessions-grid" id="sessionsGrid"></section>
+
+  <!-- Produits récents -->
+  <section class="recent-products" aria-label="Produits ajoutés récemment">
+    <h2 class="recent-title">Découvrez nos nouveautés</h2>
+    <div class="recent-scroller" id="recentScroller">
+      <!-- Cartes produits récentes rendues par script.js -->
+    </div>
+  </section>
+
+  <!-- Pourquoi choisir KBR ? -->
+  <section class="why-kbr" aria-label="Pourquoi choisir KBR ?">
+    <h2><i class="fa-solid fa-star"></i> Pourquoi choisir KBR ?</h2>
+    <div class="accordion">
+      <details>
+        <summary><i class="fa-solid fa-shield-halved"></i> Qualité garantie</summary>
+        <div class="acc-body">Des produits choisis avec exigence pour durer.</div>
+      </details>
+      <details>
+        <summary><i class="fa-solid fa-shirt"></i> Style affirmé</summary>
+        <div class="acc-body">Des collections modernes et audacieuses, toujours dans l’air du temps.</div>
+      </details>
+      <details>
+        <summary><i class="fa-solid fa-scale-balanced"></i> Confiance & transparence</summary>
+        <div class="acc-body">Nous livrons ce que nous promettons, sans compromis.</div>
+      </details>
+      <details>
+        <summary><i class="fa-solid fa-headset"></i> Service client réactif</summary>
+        <div class="acc-body">Parce que votre satisfaction est notre priorité.</div>
+      </details>
+    </div>
+
+    <div class="why-cta">
+      <p><i class="fa-solid fa-bag-shopping"></i> Découvrez, aimez, commandez. Plongez dans l’univers KBR et laissez-vous séduire par des articles qui vous ressemblent. Que ce soit pour un look du jour, une occasion spéciale ou un gadget tendance, vous trouverez toujours ce qu’il vous faut.</p>
+      <a class="btn-nouveautes" href="#recentScroller"><i class="fa-solid fa-arrow-trend-up"></i> Découvrir les nouveautés</a>
+    </div>
+
+    <div class="why-promise">
+      <h3><i class="fa-regular fa-comments"></i> Notre promesse</h3>
+      <p>Chez KBR, nous croyons que le luxe commence par la confiance. Achetez en toute sérénité, profitez d’une expérience fluide et sécurisée, et recevez vos produits rapidement et avec soin.</p>
+    </div>
+  </section>
 
   <!-- Onglets de session supprimés -->
 

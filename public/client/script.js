@@ -7,6 +7,31 @@ let currentProducts = []; // Stocke les produits actuellement affichés
 
 document.addEventListener('DOMContentLoaded', () => {
   fetchSessions();
+  fetchRecentProducts();
+  // Search toggle
+  const toggle = document.getElementById('searchToggle');
+  const bar = document.getElementById('collapsibleSearch');
+  const input = document.getElementById('searchInput');
+  if (toggle && bar) {
+    bar.classList.remove('open');
+    let suppressNextFocusNavigate = false;
+    toggle.addEventListener('click', () => {
+      const willOpen = !bar.classList.contains('open');
+      bar.classList.toggle('open');
+      if (willOpen) {
+        suppressNextFocusNavigate = true; // prevent immediate nav on programmatic focus
+        setTimeout(() => { suppressNextFocusNavigate = false; }, 350);
+        setTimeout(() => { input && input.focus({ preventScroll: false }); }, 180);
+      }
+    });
+    const goSearchIfUser = () => {
+      if (!suppressNextFocusNavigate) window.location.href = './search.html';
+    };
+    if (input) {
+      input.addEventListener('focus', goSearchIfUser);
+      input.addEventListener('click', goSearchIfUser);
+    }
+  }
 });
 
 async function fetchSessions() { 
@@ -33,6 +58,7 @@ async function fetchSessions() {
       });
     }
 
+
     // Render sessions grid cards
     renderSessionsGrid(sessions);
 
@@ -41,6 +67,36 @@ async function fetchSessions() {
   } catch (error) {
     console.error('Erreur lors du chargement des sessions :', error);
   }
+}
+
+async function fetchRecentProducts() {
+  try {
+    const res = await fetch(`${baseUrl}/api/products/recent?limit=10&_=${Date.now()}`);
+    const items = await res.json();
+    renderRecent(items);
+  } catch (e) {
+    console.error('Erreur chargement produits récents:', e);
+  }
+}
+
+function renderRecent(products) {
+  const wrap = document.getElementById('recentScroller');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  products.forEach((p) => {
+    const imgSrc = p.image || (Array.isArray(p.images) && p.images[0]) || '';
+    const card = document.createElement('article');
+    card.className = 'recent-card';
+    card.innerHTML = `
+      <img src="${imgSrc}" alt="${p.title}">
+      <span class="rc-title">${p.title}</span>
+    `;
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', () => {
+      window.location.href = `./product.html?productId=${encodeURIComponent(p._id)}`;
+    });
+    wrap.appendChild(card);
+  });
 }
 
 function renderSessionsGrid(sessions) {

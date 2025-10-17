@@ -27,10 +27,21 @@ router.post(
   async (req, res) => {
     const { title, description, sessionId, price, variantType, clientRequestId } = req.body;
     let variants = [];
+    let colors = [];
     try {
       variants = JSON.parse(req.body.variants || '[]');
     } catch (_) {
       variants = [];
+    }
+    // Colors can come as JSON string or comma-separated
+    try {
+      colors = JSON.parse(req.body.colors || '[]');
+      if (!Array.isArray(colors)) colors = [];
+    } catch (_) {
+      const raw = (req.body.colors || '').toString();
+      colors = raw
+        ? raw.split(',').map((c) => c.trim()).filter(Boolean)
+        : [];
     }
 
     const primaryFile = req.files && req.files.image && req.files.image[0];
@@ -64,6 +75,7 @@ router.post(
         images,
         variantType: variantType || 'none',
         variants,
+        colors,
         clientRequestId: clientRequestId || undefined,
       });
       res.status(201).json(product);
@@ -84,6 +96,17 @@ router.get('/', async (req, res) => {
   try {
     const filter = sessionId ? { sessionId } : {};
     const products = await Product.find(filter);
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/products/recent?limit=10 - most recently created products
+router.get('/recent', async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit) || 10, 50);
+    const products = await Product.find({}).sort({ createdAt: -1 }).limit(limit);
     res.json(products);
   } catch (err) {
     res.status(500).json({ error: err.message });

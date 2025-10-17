@@ -9,6 +9,7 @@ const productSchema = new mongoose.Schema({
   variants: [String],
   sessionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Session' },
   price: Number,
+  colors: [String],
   clientRequestId: { type: String, unique: true, sparse: true }
 }, { timestamps: true });
 

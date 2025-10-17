@@ -20,10 +20,18 @@ function renderProduct(product) {
 
   const imagesArr = uniqueImages(product);
   const primary = imagesArr[0];
+  // default selected image
+  product.selectedImage = primary;
   const chips = Array.isArray(product.variants) && product.variants.length > 0
     ? `<div class="variant-chips" title="${product.variantType || ''}">`
         + product.variants.map(v => `<span class="chip">${v}</span>`).join('')
         + `</div>`
+    : '';
+
+  const colorsUI = Array.isArray(product.colors) && product.colors.length > 0
+    ? `<div class="color-dots color-dots--selectable" id="colorSelector">
+         ${product.colors.map(c => `<button class="color-dot selectable" title="${c}" data-color="${c}" style="background:${c}"></button>`).join('')}
+       </div>`
     : '';
 
   container.innerHTML = `
@@ -32,7 +40,11 @@ function renderProduct(product) {
         <div class="product-gallery">
           <img class="main-image" src="${primary}" alt="${product.title}">
           <div class="thumbs">
-            ${imagesArr.map((src, i) => `<img src="${src}" alt="${product.title} ${i+1}" class="${i===0?'active':''}" data-idx="${i}">`).join('')}
+            ${imagesArr.map((src, i) => `
+              <button type="button" class="thumb ${i===0?'active':''}" data-idx="${i}" aria-label="Miniature ${i+1}">
+                <img src="${src}" alt="${product.title} ${i+1}">
+              </button>
+            `).join('')}
           </div>
         </div>
       </section>
@@ -40,6 +52,7 @@ function renderProduct(product) {
         <h1 class="product-title">${product.title}</h1>
         <p class="product-desc">${product.description}</p>
         ${chips}
+        ${colorsUI}
         <p class="product-price"><strong>${product.price} FCFA</strong></p>
         <div class="product-actions">
           <label>Quantité :
@@ -75,11 +88,20 @@ function renderProduct(product) {
 
   // thumbs behavior
   const mainImg = container.querySelector('.main-image');
-  container.querySelectorAll('.thumbs img').forEach((imgEl) => {
-    imgEl.addEventListener('click', () => {
+  container.querySelectorAll('.thumbs .thumb').forEach((thumbEl) => {
+    const imgEl = thumbEl.querySelector('img');
+    thumbEl.addEventListener('click', () => {
+      const isAlreadyActive = thumbEl.classList.contains('active');
+      // Switch main image
       mainImg.src = imgEl.src;
-      container.querySelectorAll('.thumbs img').forEach(e => e.classList.remove('active'));
-      imgEl.classList.add('active');
+      product.selectedImage = imgEl.src;
+      // Toggle active
+      container.querySelectorAll('.thumbs .thumb').forEach(e => { e.classList.remove('active'); e.classList.remove('checked'); });
+      thumbEl.classList.add('active');
+      // If clicking the active thumb again, mark as checked
+      if (isAlreadyActive) {
+        thumbEl.classList.add('checked');
+      }
     });
   });
 
@@ -95,6 +117,19 @@ function renderProduct(product) {
     });
   }
 
+  // color selection behavior
+  const colorWrap = container.querySelector('#colorSelector');
+  if (colorWrap) {
+    const colorBtns = colorWrap.querySelectorAll('.color-dot.selectable');
+    colorBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        colorBtns.forEach(b => b.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        product.selectedColor = e.currentTarget.getAttribute('data-color');
+      });
+    });
+  }
+
   // add to cart
   const btn = document.getElementById('addToCartBtn');
   btn.addEventListener('click', () => {
@@ -104,7 +139,8 @@ function renderProduct(product) {
       return;
     }
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    cart.push({ ...product, quantity: qty, selectedVariant: product.selectedVariant || null });
+    const chosenImage = product.selectedImage || mainImg.src || (product.image || (Array.isArray(product.images) && product.images[0]) || '');
+    cart.push({ ...product, image: chosenImage, quantity: qty, selectedVariant: product.selectedVariant || null, selectedColor: product.selectedColor || null });
     localStorage.setItem('cart', JSON.stringify(cart));
     window.location.href = 'cart.html';
   });
