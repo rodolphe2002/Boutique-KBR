@@ -88,7 +88,7 @@ function renderRecent(products) {
     const card = document.createElement('article');
     card.className = 'recent-card';
     card.innerHTML = `
-      <img src="${imgSrc}" alt="${p.title}">
+      <img src="${imgSrc}" alt="${p.title}" loading="lazy" decoding="async">
       <span class="rc-title">${p.title}</span>
     `;
     card.style.cursor = 'pointer';
@@ -97,6 +97,30 @@ function renderRecent(products) {
     });
     wrap.appendChild(card);
   });
+
+  // Inject JSON-LD ItemList for recent products (top 10)
+  try {
+    const list = (products || []).slice(0, 10).map((p, idx) => ({
+      '@type': 'ListItem',
+      position: idx + 1,
+      url: `${window.location.origin}/client/product.html?productId=${encodeURIComponent(p._id)}`,
+      name: p.title
+    }));
+    const ld = {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Nouveautés Boutique KBR',
+      itemListElement: list
+    };
+    let tag = document.getElementById('ld-recent-itemlist');
+    if (!tag) {
+      tag = document.createElement('script');
+      tag.type = 'application/ld+json';
+      tag.id = 'ld-recent-itemlist';
+      document.head.appendChild(tag);
+    }
+    tag.textContent = JSON.stringify(ld);
+  } catch {}
 }
 
 function renderSessionsGrid(sessions) {
@@ -160,9 +184,9 @@ async function fetchProducts(sessionId) {
 
       card.innerHTML = `
         <div class="product-gallery">
-          <img class="main-image" src="${primaryImage}" alt="${product.title}">
+          <img class="main-image" src="${primaryImage}" alt="${product.title}" loading="lazy" decoding="async">
           <div class="thumbs">
-            ${imagesArr.map((src, i) => `<img src="${src}" alt="${product.title} ${i+1}" class="${i===0?'active':''}" data-idx="${i}">`).join('')}
+            ${imagesArr.map((src, i) => `<img src="${src}" alt="${product.title} ${i+1}" class="${i===0?'active':''}" data-idx="${i}" loading="lazy" decoding="async">`).join('')}
           </div>
         </div>
         <h3>${product.title}</h3>

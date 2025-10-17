@@ -14,6 +14,40 @@ function uniqueImages(product) {
   return all.length ? all : [''];
 }
 
+// --- SEO helpers ---
+function setMetaName(name, content) {
+  if (!content) return;
+  let el = document.querySelector(`meta[name="${name}"]`);
+  if (!el) {
+    el = document.createElement('meta');
+    el.setAttribute('name', name);
+    document.head.appendChild(el);
+  }
+  el.setAttribute('content', content);
+}
+function setMetaProp(prop, content) {
+  if (!content) return;
+  let el = document.querySelector(`meta[property="${prop}"]`);
+  if (!el) {
+    el = document.createElement('meta');
+    el.setAttribute('property', prop);
+    document.head.appendChild(el);
+  }
+  el.setAttribute('content', content);
+}
+function injectJSONLD(id, data) {
+  try {
+    let tag = document.getElementById(id);
+    if (!tag) {
+      tag = document.createElement('script');
+      tag.type = 'application/ld+json';
+      tag.id = id;
+      document.head.appendChild(tag);
+    }
+    tag.textContent = JSON.stringify(data);
+  } catch {}
+}
+
 function renderProduct(product) {
   const container = document.getElementById('productDetail');
   if (!container) return;
@@ -38,11 +72,11 @@ function renderProduct(product) {
     <div class="product-detail-grid">
       <section class="product-media">
         <div class="product-gallery">
-          <img class="main-image" src="${primary}" alt="${product.title}">
+          <img class="main-image" src="${primary}" alt="${product.title}" loading="lazy" decoding="async">
           <div class="thumbs">
             ${imagesArr.map((src, i) => `
               <button type="button" class="thumb ${i===0?'active':''}" data-idx="${i}" aria-label="Miniature ${i+1}">
-                <img src="${src}" alt="${product.title} ${i+1}">
+                <img src="${src}" alt="${product.title} ${i+1}" loading="lazy" decoding="async">
               </button>
             `).join('')}
           </div>
@@ -151,6 +185,48 @@ function renderProduct(product) {
       const item = hdr.parentElement;
       item.classList.toggle('active');
     });
+  });
+
+  // --- Dynamic meta/OG ---
+  const url = window.location.href;
+  const desc = (product.description && product.description.length > 0) ? product.description : `${product.title} disponible chez Boutique KBR.`;
+  document.title = `${product.title} - Boutique KBR`;
+  setMetaName('description', desc);
+  setMetaProp('og:type', 'product');
+  setMetaProp('og:title', `${product.title} | Boutique KBR`);
+  setMetaProp('og:description', desc);
+  setMetaProp('og:url', url);
+  setMetaProp('og:image', product.selectedImage || primary);
+  setMetaName('twitter:title', `${product.title} | Boutique KBR`);
+  setMetaName('twitter:description', desc);
+  setMetaName('twitter:image', product.selectedImage || primary);
+
+  // --- JSON-LD Product ---
+  const currency = 'XOF';
+  injectJSONLD('ld-product', {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.title,
+    description: desc,
+    image: imagesArr,
+    brand: product.brand || 'Boutique KBR',
+    offers: {
+      '@type': 'Offer',
+      price: product.price,
+      priceCurrency: currency,
+      availability: 'https://schema.org/InStock',
+      url
+    }
+  });
+
+  // --- BreadcrumbList ---
+  injectJSONLD('ld-breadcrumb', {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Accueil', item: `${window.location.origin}/client/index.html` },
+      { '@type': 'ListItem', position: 2, name: product.title, item: url }
+    ]
   });
 }
 

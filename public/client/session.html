@@ -3,23 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Détails de la session</title>
+  <title>Session | Boutique KBR</title>
+  <meta name="description" content="Découvrez les produits d’une session Boutique KBR: vêtements, chaussures, téléphones et accessoires. Livraison rapide en Côte d’Ivoire.">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#111111">
+  <link rel="preconnect" href="https://boutique-kbr.vercel.app" crossorigin>
+  <link rel="canonical" href="https://boutique-kbr.vercel.app/client/session.html" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="Session | Boutique KBR">
+  <meta property="og:description" content="Parcourez les produits d’une session Boutique KBR.">
+  <meta property="og:site_name" content="Boutique KBR">
+  <meta property="og:url" content="https://boutique-kbr.vercel.app/client/session.html">
+  <meta property="og:image" content="https://boutique-kbr.vercel.app/client/img/Logo.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Session | Boutique KBR">
+  <meta name="twitter:description" content="Parcourez les produits d’une session Boutique KBR.">
+  <meta name="twitter:image" content="https://boutique-kbr.vercel.app/client/img/Logo.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Boutique KBR",
+    "url": "https://boutique-kbr.vercel.app/client/index.html",
+    "logo": "https://boutique-kbr.vercel.app/client/img/Logo.jpg"
+  }
+  </script>
   <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="./chat.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="icon" type="image/svg+xml" href="./img/WhatsApp Image 2025-05-24 à 22.52.58_10ea0336.jpg" />
 </head>
 <body>
+  <h1 style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">Session Boutique KBR – Produits et nouveautés</h1>
   <nav class="navbar">
-    <div class="logo"><img src="./img/Logo.jpg" alt="Boutique KBR"></div>
+    <div class="logo"><img src="./img/Logo.jpg" alt="Boutique KBR - Logo" width="120" height="36"></div>
     <ul class="nav-links">
       <li><a href="./index.html">Accueil</a></li>
-      <li><a href="./cart.html"><i class="fas fa-shopping-cart"></i></a></li>
+      <li><a href="./cart.html" aria-label="Voir le panier"><i class="fas fa-shopping-cart" aria-hidden="true"></i></a></li>
     </ul>
   </nav>
 
   <section class="banniere" id="sessionBanner" style="display:none;">
-    <img id="sessionBannerImg" src="" alt="Image de la session">
+    <img id="sessionBannerImg" src="" alt="Image de la session" loading="lazy" decoding="async">
     <div class="banniere-contenu">
       <p id="sessionSubtitle"></p>
       <button><a href="#productList">Voir les produits</a></button>
@@ -44,9 +74,9 @@
       <div class="footer-section">
         <h3>Suivez-nous</h3>
         <div class="socials">
-          <a href="#"><i class="fab fa-facebook-f"></i></a>
-          <a href="#"><i class="fab fa-instagram"></i></a>
-          <a href="https://wa.me/message/FMG72KBPGVJRD1"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" aria-label="Facebook Boutique KBR"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+          <a href="#" aria-label="Instagram Boutique KBR"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+          <a href="https://wa.me/message/FMG72KBPGVJRD1" aria-label="WhatsApp Boutique KBR"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
         </div>
       </div>
     </div>

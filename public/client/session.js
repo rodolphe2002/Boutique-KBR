@@ -21,6 +21,40 @@ function truncateWords(text, maxWords = 5) {
   return parts.slice(0, maxWords).join(' ') + '…';
 }
 
+// --- SEO helpers ---
+function setMetaName(name, content) {
+  if (!content) return;
+  let el = document.querySelector(`meta[name="${name}"]`);
+  if (!el) {
+    el = document.createElement('meta');
+    el.setAttribute('name', name);
+    document.head.appendChild(el);
+  }
+  el.setAttribute('content', content);
+}
+function setMetaProp(prop, content) {
+  if (!content) return;
+  let el = document.querySelector(`meta[property="${prop}"]`);
+  if (!el) {
+    el = document.createElement('meta');
+    el.setAttribute('property', prop);
+    document.head.appendChild(el);
+  }
+  el.setAttribute('content', content);
+}
+function injectJSONLD(id, data) {
+  try {
+    let tag = document.getElementById(id);
+    if (!tag) {
+      tag = document.createElement('script');
+      tag.type = 'application/ld+json';
+      tag.id = id;
+      document.head.appendChild(tag);
+    }
+    tag.textContent = JSON.stringify(data);
+  } catch {}
+}
+
 function renderColorDots(colors) {
   if (!Array.isArray(colors) || colors.length === 0) return '';
   const max = 6;
@@ -50,16 +84,48 @@ async function initSessionPage(sessionId) {
       }
       sessionSubtitle.textContent = session.name;
       document.title = `${session.name} - Boutique KBR`;
+
+      // Dynamic SEO meta/OG for the session
+      const url = window.location.href;
+      const desc = `Découvrez la sélection ${session.name} chez Boutique KBR: vêtements, chaussures et accessoires.`;
+      setMetaName('description', desc);
+      setMetaProp('og:title', `${session.name} | Boutique KBR`);
+      setMetaProp('og:description', desc);
+      setMetaProp('og:url', url);
+      if (session.image) setMetaProp('og:image', session.image);
+      setMetaName('twitter:title', `${session.name} | Boutique KBR`);
+      setMetaName('twitter:description', desc);
+      if (session.image) setMetaName('twitter:image', session.image);
+
+      // BreadcrumbList JSON-LD
+      injectJSONLD('ld-breadcrumb', {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Accueil',
+            item: `${window.location.origin}/client/index.html`
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: session.name,
+            item: url
+          }
+        ]
+      });
     }
 
     // Load products for this session
-    await fetchProducts(sessionId);
+    await fetchProducts(sessionId, session);
   } catch (err) {
     console.error('Erreur chargement session:', err);
   }
 }
 
-async function fetchProducts(sessionId) {
+async function fetchProducts(sessionId, sessionMeta) {
   try {
     const res = await fetch(`${baseUrl}/api/products?sessionId=${encodeURIComponent(sessionId)}&_=${Date.now()}`);
     const products = await res.json();
@@ -79,7 +145,7 @@ async function fetchProducts(sessionId) {
       const imgSrc = product.image || (Array.isArray(product.images) && product.images[0]) || '';
       const colorDots = renderColorDots(product.colors);
       card.innerHTML = `
-        <img class="main-image" src="${imgSrc}" alt="${product.title}">
+        <img class="main-image" src="${imgSrc}" alt="${product.title}" loading="lazy" decoding="async">
         <h3>${product.title}</h3>
         <p>${truncateWords(product.description || '', 5)}</p>
         ${colorDots}
@@ -91,6 +157,22 @@ async function fetchProducts(sessionId) {
       });
       productList.appendChild(card);
     });
+    // Inject ItemList JSON-LD for session products
+    try {
+      const list = (products || []).slice(0, 12).map((p, idx) => ({
+        '@type': 'ListItem',
+        position: idx + 1,
+        url: `${window.location.origin}/client/product.html?productId=${encodeURIComponent(p._id)}`,
+        name: p.title
+      }));
+      injectJSONLD('ld-session-itemlist', {
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: `Produits de la session ${sessionMeta?.name || ''}`.trim(),
+        itemListElement: list
+      });
+    } catch {}
+
   } catch (error) {
     console.error('Erreur chargement produits:', error);
   }
@@ -147,9 +229,9 @@ function performSearch(query) {
       : '';
     card.innerHTML = `
       <div class="product-gallery">
-        <img class="main-image" src="${primaryImage}" alt="${product.title}">
+        <img class="main-image" src="${primaryImage}" alt="${product.title}" loading="lazy" decoding="async">
         <div class="thumbs">
-          ${imagesArr.map((src, i) => `<img src="${src}" alt="${product.title} ${i+1}" class="${i===0?'active':''}" data-idx="${i}">`).join('')}
+          ${imagesArr.map((src, i) => `<img src="${src}" alt="${product.title} ${i+1}" class="${i===0?'active':''}" data-idx="${i}" loading="lazy" decoding="async">`).join('')}
         </div>
       </div>
       <h3>${product.title}</h3>
