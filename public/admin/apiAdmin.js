@@ -394,6 +394,10 @@ document.addEventListener('DOMContentLoaded', () => {
         files.forEach(f => formData.append('images', f));
       }
       formData.append('replaceAllImages', String(replaceAllImages));
+      const originalText = saveBtn.textContent;
+      saveBtn.disabled = true;
+      saveBtn.classList.add('btn-loading');
+      saveBtn.textContent = 'Enregistrement...';
       try {
         const res = await fetch(`${baseUrl}/products/${editProductId}`, {
           method: 'PUT',
@@ -405,6 +409,10 @@ document.addEventListener('DOMContentLoaded', () => {
         loadProductManagement();
       } catch (err) {
         alert(err.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.classList.remove('btn-loading');
+        saveBtn.textContent = originalText;
       }
     });
   }
@@ -886,6 +894,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const formData = new FormData();
       formData.append('name', name);
       if (editSessionFileSelected) formData.append('image', editSessionFileSelected);
+      const originalText = saveEditSessionBtn.textContent;
+      saveEditSessionBtn.disabled = true;
+      saveEditSessionBtn.classList.add('btn-loading');
+      saveEditSessionBtn.textContent = 'Enregistrement...';
       try {
         const res = await fetch(`${baseUrl}/sessions/${editSessionId}`, {
           method: 'PUT',
@@ -897,6 +909,11 @@ document.addEventListener('DOMContentLoaded', () => {
         loadSessionManagement();
         loadSessions();
       } catch (err) { alert(err.message); }
+      finally {
+        saveEditSessionBtn.disabled = false;
+        saveEditSessionBtn.classList.remove('btn-loading');
+        saveEditSessionBtn.textContent = originalText;
+      }
     });
   }
 });
