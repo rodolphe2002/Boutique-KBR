@@ -138,20 +138,72 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// 🔄 Modifier un produit (titre, prix uniquement ici)
-router.put('/:id', async (req, res) => {
-  try {
-    const { title, price } = req.body;
-    const updated = await Product.findByIdAndUpdate(
-      req.params.id,
-      { title, price },
-      { new: true }
-    );
-    res.json(updated);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+// 🔄 Modifier un produit (multipart pris en charge pour images + champs étendus)
+router.put(
+  '/:id',
+  upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'images', maxCount: 10 },
+  ]),
+  async (req, res) => {
+    try {
+      const id = req.params.id;
+      const body = req.body || {};
+      const {
+        title,
+        description,
+        sessionId,
+        price,
+        variantType,
+        replaceAllImages
+      } = body;
+
+      let variants = [];
+      let colors = [];
+      try { variants = JSON.parse(body.variants || '[]'); } catch (_) {
+        const raw = (body.variants || '').toString();
+        variants = raw ? raw.split(',').map(v => v.trim()).filter(Boolean) : [];
+      }
+      try { colors = JSON.parse(body.colors || '[]'); if (!Array.isArray(colors)) colors = []; } catch (_) {
+        const raw = (body.colors || '').toString();
+        colors = raw ? raw.split(',').map(c => c.trim()).filter(Boolean) : [];
+      }
+
+      const primaryFile = req.files && req.files.image && req.files.image[0];
+      const galleryFiles = (req.files && req.files.images) ? req.files.images : [];
+
+      const existing = await Product.findById(id);
+      if (!existing) return res.status(404).json({ error: 'Produit introuvable' });
+
+      if (title !== undefined) existing.title = title;
+      if (description !== undefined) existing.description = description;
+      if (sessionId !== undefined) existing.sessionId = sessionId;
+      if (price !== undefined) existing.price = price;
+      if (variantType !== undefined) existing.variantType = variantType || 'none';
+      if (variants && Array.isArray(variants)) existing.variants = variants;
+      if (colors && Array.isArray(colors)) existing.colors = colors;
+
+      if (primaryFile) {
+        existing.image = primaryFile.path;
+      }
+
+      if (galleryFiles.length) {
+        const newPaths = galleryFiles.map(f => f.path);
+        const shouldReplace = String(replaceAllImages || '').toLowerCase() === 'true' || replaceAllImages === true;
+        if (shouldReplace) {
+          existing.images = newPaths;
+        } else {
+          existing.images = Array.isArray(existing.images) ? existing.images.concat(newPaths) : newPaths;
+        }
+      }
+
+      const updated = await existing.save();
+      res.json(updated);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   }
-});
+);
 
 
 

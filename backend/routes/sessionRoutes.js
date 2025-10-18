@@ -66,17 +66,20 @@ router.delete('/:id', async (req, res) => {
 
 
 // 🔄 Modifier une session
-router.put('/:id', async (req, res) => {
+router.put('/:id', upload.single('image'), async (req, res) => {
   try {
     const { name } = req.body;
     if (!name) return res.status(400).json({ error: "Nom requis" });
 
-    const slug = name.toLowerCase().replace(/\s+/g, '-');
-    const updated = await Session.findByIdAndUpdate(
-      req.params.id,
-      { name, slug },
-      { new: true }
-    );
+    const session = await Session.findById(req.params.id);
+    if (!session) return res.status(404).json({ error: 'Session introuvable' });
+
+    session.name = name;
+    session.slug = name.toLowerCase().replace(/\s+/g, '-');
+    if (req.file && req.file.path) {
+      session.image = req.file.path;
+    }
+    const updated = await session.save();
     res.json(updated);
   } catch (err) {
     res.status(500).json({ error: err.message });

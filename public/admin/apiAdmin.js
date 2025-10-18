@@ -199,6 +199,56 @@ function renderSelectedColors() {
   });
 }
 
+let editProductId = null;
+let editColors = [];
+let productFilesSelected = [];
+let editFilesSelected = [];
+let sessionCreateFileSelected = null;
+let editSessionId = null;
+let editSessionFileSelected = null;
+
+function renderFilePreviews(containerId, files, onDelete) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  files.forEach((file, idx) => {
+    const card = document.createElement('div');
+    card.className = 'img-card';
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(file);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = 'Suppr';
+    btn.addEventListener('click', () => {
+      onDelete(idx);
+    });
+    card.appendChild(img);
+    card.appendChild(btn);
+    container.appendChild(card);
+  });
+}
+function renderEditColors() {
+  const wrap = document.getElementById('editColorList');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  editColors.forEach((c, idx) => {
+    const item = document.createElement('div');
+    item.style.display = 'flex';
+    item.style.alignItems = 'center';
+    item.style.gap = '6px';
+    item.innerHTML = `
+      <span style="display:inline-block;width:18px;height:18px;border-radius:50%;border:1px solid rgba(0,0,0,.2);background:${c}"></span>
+      <button type="button" data-idx="${idx}">Supprimer</button>
+    `;
+    item.querySelector('button').addEventListener('click', (e) => {
+      const i = parseInt(e.currentTarget.getAttribute('data-idx'));
+      editColors.splice(i, 1);
+      renderEditColors();
+    });
+    wrap.appendChild(item);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const addColorBtn = document.getElementById('addColorBtn');
   const colorPicker = document.getElementById('colorPicker');
@@ -210,7 +260,190 @@ document.addEventListener('DOMContentLoaded', () => {
       renderSelectedColors();
     });
   }
+  const productInput = document.getElementById('productImages');
+  if (productInput) {
+    productInput.addEventListener('change', () => {
+      const files = Array.from(productInput.files || []);
+      productFilesSelected = files.slice(0, 10);
+      renderFilePreviews('productImagePreview', productFilesSelected, (idx) => {
+        productFilesSelected.splice(idx, 1);
+        renderFilePreviews('productImagePreview', productFilesSelected, arguments.callee);
+      });
+    });
+  }
+  // Session create image preview
+  const sessionCreateInput = document.getElementById('sessionImage');
+  if (sessionCreateInput) {
+    const renderSessionCreatePreview = () => {
+      const cont = document.getElementById('sessionCreateImagePreview');
+      if (!cont) return;
+      cont.innerHTML = '';
+      if (!sessionCreateFileSelected) return;
+      const card = document.createElement('div');
+      card.className = 'img-card';
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(sessionCreateFileSelected);
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = 'Suppr';
+      btn.addEventListener('click', () => {
+        sessionCreateFileSelected = null;
+        sessionCreateInput.value = '';
+        renderSessionCreatePreview();
+      });
+      card.appendChild(img);
+      card.appendChild(btn);
+      cont.appendChild(card);
+    };
+    sessionCreateInput.addEventListener('change', () => {
+      const f = (sessionCreateInput.files && sessionCreateInput.files[0]) || null;
+      sessionCreateFileSelected = f;
+      renderSessionCreatePreview();
+    });
+  }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const addEditColorBtn = document.getElementById('addEditColorBtn');
+  const editColorPicker = document.getElementById('editColorPicker');
+  if (addEditColorBtn && editColorPicker) {
+    addEditColorBtn.addEventListener('click', () => {
+      const val = (editColorPicker.value || '').trim();
+      if (!val) return;
+      if (!editColors.includes(val)) editColors.push(val);
+      renderEditColors();
+    });
+  }
+  const closeBtn = document.getElementById('closeEditModal');
+  const modal = document.getElementById('editProductModal');
+  if (closeBtn && modal) {
+    closeBtn.addEventListener('click', () => { modal.style.display = 'none'; });
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+  }
+  const editInput = document.getElementById('editProductImages');
+  if (editInput) {
+    const rerenderEditPreview = () => {
+      renderFilePreviews('editImagePreview', editFilesSelected, (idx) => {
+        editFilesSelected.splice(idx, 1);
+        rerenderEditPreview();
+      });
+    };
+    editInput.addEventListener('change', () => {
+      const files = Array.from(editInput.files || []);
+      editFilesSelected = files.slice(0, 10);
+      rerenderEditPreview();
+    });
+  }
+  // Session edit modal wiring
+  const closeSessionBtn = document.getElementById('closeEditSessionModal');
+  const sessionModal = document.getElementById('editSessionModal');
+  if (closeSessionBtn && sessionModal) {
+    closeSessionBtn.addEventListener('click', () => { sessionModal.style.display = 'none'; });
+    sessionModal.addEventListener('click', (e) => { if (e.target === sessionModal) sessionModal.style.display = 'none'; });
+  }
+  const editSessionInput = document.getElementById('editSessionImage');
+  if (editSessionInput) {
+    const renderEditSessionPreview = () => {
+      const cont = document.getElementById('editSessionImagePreview');
+      if (!cont) return;
+      cont.innerHTML = '';
+      if (!editSessionFileSelected) return;
+      const card = document.createElement('div');
+      card.className = 'img-card';
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(editSessionFileSelected);
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = 'Suppr';
+      btn.addEventListener('click', () => {
+        editSessionFileSelected = null;
+        editSessionInput.value = '';
+        renderEditSessionPreview();
+      });
+      card.appendChild(img);
+      card.appendChild(btn);
+      cont.appendChild(card);
+    };
+    editSessionInput.addEventListener('change', () => {
+      editSessionFileSelected = (editSessionInput.files && editSessionInput.files[0]) || null;
+      renderEditSessionPreview();
+    });
+  }
+  const saveBtn = document.getElementById('saveEditProductBtn');
+  if (saveBtn) {
+    saveBtn.addEventListener('click', async () => {
+      if (!editProductId) return;
+      const token = localStorage.getItem('adminToken');
+      const title = (document.getElementById('editProductTitle')?.value || '').trim();
+      const price = (document.getElementById('editProductPrice')?.value || '').trim();
+      const description = (document.getElementById('editProductDescription')?.value || '').trim();
+      const variantType = document.getElementById('editVariantType')?.value || 'none';
+      const variantsRaw = (document.getElementById('editVariantValues')?.value || '').trim();
+      const variants = variantsRaw ? variantsRaw.split(',').map(v=>v.trim()).filter(Boolean) : [];
+      const files = editFilesSelected || [];
+      const replaceAllImages = !!document.getElementById('replaceAllImages')?.checked;
+      const formData = new FormData();
+      if (title) formData.append('title', title);
+      if (price) formData.append('price', price);
+      if (description) formData.append('description', description);
+      formData.append('variantType', variantType);
+      formData.append('variants', JSON.stringify(variants));
+      formData.append('colors', JSON.stringify(editColors || []));
+      if (files.length) {
+        formData.append('image', files[0]);
+        files.forEach(f => formData.append('images', f));
+      }
+      formData.append('replaceAllImages', String(replaceAllImages));
+      try {
+        const res = await fetch(`${baseUrl}/products/${editProductId}`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+        if (!res.ok) throw new Error('Erreur modification produit');
+        document.getElementById('editProductModal').style.display = 'none';
+        loadProductManagement();
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+  }
+});
+
+async function openEditProductById(id) {
+  const token = localStorage.getItem('adminToken');
+  try {
+    const res = await fetch(`${baseUrl}/products/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
+    if (!res.ok) throw new Error('Produit introuvable');
+    const p = await res.json();
+    openEditProduct(p);
+  } catch (_) {}
+}
+
+function openEditProduct(product) {
+  editProductId = product._id;
+  const modal = document.getElementById('editProductModal');
+  if (!modal) return;
+  const t = document.getElementById('editProductTitle');
+  const pr = document.getElementById('editProductPrice');
+  const d = document.getElementById('editProductDescription');
+  const vt = document.getElementById('editVariantType');
+  const vv = document.getElementById('editVariantValues');
+  if (t) t.value = product.title || '';
+  if (pr) pr.value = product.price != null ? product.price : '';
+  if (d) d.value = product.description || '';
+  if (vt) vt.value = product.variantType || 'none';
+  if (vv) vv.value = Array.isArray(product.variants) ? product.variants.join(',') : '';
+  editColors = Array.isArray(product.colors) ? [...product.colors] : [];
+  renderEditColors();
+  const filesInput = document.getElementById('editProductImages');
+  if (filesInput) filesInput.value = '';
+  editFilesSelected = [];
+  renderFilePreviews('editImagePreview', editFilesSelected, () => {});
+  const replaceChk = document.getElementById('replaceAllImages');
+  if (replaceChk) replaceChk.checked = false;
+  modal.style.display = 'flex';
+}
 
 async function addProduct() {
   if (isAddingProduct) return; // guard against double-clicks / duplicate requests
@@ -226,7 +459,7 @@ async function addProduct() {
   const price = document.getElementById('productPrice').value.trim();
   const sessionId = document.getElementById('sessionSelect').value;
   const imagesInput = document.getElementById('productImages');
-  const files = imagesInput && imagesInput.files ? Array.from(imagesInput.files) : [];
+  const files = productFilesSelected || [];
 
   // Variants
   const variantTypeEl = document.getElementById('variantType');
@@ -283,7 +516,9 @@ async function addProduct() {
     document.getElementById('productTitle').value = '';
     document.getElementById('productDescription').value = '';
     document.getElementById('productPrice').value = '';
-    imagesInput.value = '';
+    if (imagesInput) imagesInput.value = '';
+    productFilesSelected = [];
+    renderFilePreviews('productImagePreview', productFilesSelected, () => {});
     if (variantTypeEl) variantTypeEl.value = 'none';
     if (variantValuesEl) variantValuesEl.value = '';
     // reset colors
@@ -574,12 +809,14 @@ async function loadSessionManagement() {
     sessions.forEach(session => {
       const li = document.createElement('li');
       li.className = 'mgmt-card';
+      const img = session.image || '';
       li.innerHTML = `
         <div class="mgmt-main">
-          <div class="mgmt-title"><input type="text" value="${session.name}" id="edit-session-${session._id}" /></div>
+          ${img ? `<img class="mgmt-thumb" src="${img}" alt="${session.name}" />` : `<div class="mgmt-thumb" style="display:flex;align-items:center;justify-content:center;color:#6b7280;font-weight:700;">S</div>`}
+          <div class="mgmt-title"><div class="mgmt-name">${session.name}</div></div>
         </div>
         <div class="mgmt-side">
-          <button class="btn-neutral" onclick="updateSession('${session._id}')">Modifier</button>
+          <button class="btn-neutral" onclick="openEditSessionById('${session._id}')">Modifier</button>
           <button class="btn-ghost" onclick="deleteSession('${session._id}')">Supprimer</button>
         </div>
       `;
@@ -613,32 +850,56 @@ async function deleteSession(id) {
 
 
 // Modifier une session
-async function updateSession(id) {
-  const token = localStorage.getItem('adminToken');
-  const name = document.getElementById(`edit-session-${id}`).value.trim();
-  if (!name) {
-    alert("Nom invalide");
-    return;
-  }
-
-  try {
-    const res = await fetch(`${baseUrl}/sessions/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({ name })
-    });
-
-    if (!res.ok) throw new Error('Erreur modification');
-    alert("Session modifiée");
-    loadSessionManagement();
-    loadSessions(); // rafraîchit la liste pour "Ajouter produit"
-  } catch (err) {
-    alert(err.message);
-  }
+function openEditSession(session) {
+  editSessionId = session._id;
+  const modal = document.getElementById('editSessionModal');
+  if (!modal) return;
+  const n = document.getElementById('editSessionName');
+  if (n) n.value = session.name || '';
+  const input = document.getElementById('editSessionImage');
+  if (input) input.value = '';
+  editSessionFileSelected = null;
+  const cont = document.getElementById('editSessionImagePreview');
+  if (cont) cont.innerHTML = '';
+  modal.style.display = 'flex';
 }
+
+async function openEditSessionById(id) {
+  const token = localStorage.getItem('adminToken');
+  try {
+    const res = await fetch(`${baseUrl}/sessions`, { headers: { 'Authorization': `Bearer ${token}` } });
+    if (!res.ok) throw new Error('Erreur chargement sessions');
+    const sessions = await res.json();
+    const session = sessions.find(s => s._id === id);
+    if (session) openEditSession(session);
+  } catch (_) {}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const saveEditSessionBtn = document.getElementById('saveEditSessionBtn');
+  if (saveEditSessionBtn) {
+    saveEditSessionBtn.addEventListener('click', async () => {
+      if (!editSessionId) return;
+      const token = localStorage.getItem('adminToken');
+      const name = (document.getElementById('editSessionName')?.value || '').trim();
+      if (!name) { alert('Nom invalide'); return; }
+      const formData = new FormData();
+      formData.append('name', name);
+      if (editSessionFileSelected) formData.append('image', editSessionFileSelected);
+      try {
+        const res = await fetch(`${baseUrl}/sessions/${editSessionId}`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+        if (!res.ok) throw new Error('Erreur modification');
+        document.getElementById('editSessionModal').style.display = 'none';
+        loadSessionManagement();
+        loadSessions();
+      } catch (err) { alert(err.message); }
+    });
+  }
+});
 
 
 
@@ -671,11 +932,10 @@ async function loadProductManagement() {
       li.innerHTML = `
         <div class="mgmt-main">
           <img class="mgmt-thumb" src="${img}" alt="${product.title}" />
-          <div class="mgmt-title"><input type="text" id="edit-title-${product._id}" value="${product.title}" /></div>
+          <div class="mgmt-title"><div class="mgmt-name">${product.title}</div></div>
         </div>
         <div class="mgmt-side">
-          <input class="price-input" type="number" id="edit-price-${product._id}" value="${product.price}" />
-          <button class="btn-neutral" onclick="updateProduct('${product._id}')">Modifier</button>
+          <button class="btn-neutral" onclick="openEditProductById('${product._id}')">Modifier</button>
           <button class="btn-ghost" onclick="deleteProduct('${product._id}')">Supprimer</button>
         </div>
       `;

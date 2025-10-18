@@ -110,6 +110,7 @@
                     <input type="file" id="sessionImage" accept="image/*" />
                     <div class="form-help">JPEG/PNG, recommandé ≥ 1200×600px</div>
                   </div>
+                  <div id="sessionCreateImagePreview" class="img-previews"></div>
                 </div>
               </div>
               <div class="form-actions">
@@ -145,6 +146,7 @@
                     <input type="file" id="productImages" accept="image/*" multiple />
                     <div class="form-help">Jusqu'à 10 images. La première est l'image principale.</div>
                   </div>
+                  <div id="productImagePreview" class="img-previews"></div>
                 </div>
                 <div class="form-group">
                   <label for="variantType">Type de variantes (optionnel)</label>
@@ -206,6 +208,93 @@
             </ul>
           </div>
         </aside>
+      </div>
+    </div>
+  </div>
+
+  <div id="editProductModal" class="modal-backdrop" style="display:none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Modifier le produit</h3>
+        <button type="button" id="closeEditModal" class="icon-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="editProductTitle">Titre</label>
+            <input type="text" id="editProductTitle" />
+          </div>
+          <div class="form-group">
+            <label for="editProductPrice">Prix</label>
+            <input type="number" id="editProductPrice" />
+          </div>
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label for="editProductDescription">Description</label>
+            <textarea id="editProductDescription"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="editVariantType">Type de variantes</label>
+            <select id="editVariantType">
+              <option value="none">Aucune</option>
+              <option value="tailles">Tailles</option>
+              <option value="pointures">Pointures</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="editVariantValues">Valeurs (séparées par des virgules)</label>
+            <input type="text" id="editVariantValues" />
+          </div>
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label>Couleurs disponibles</label>
+            <div style="display:flex; align-items:center; gap:8px; margin:6px 0;">
+              <input type="color" id="editColorPicker" value="#000000" />
+              <button type="button" id="addEditColorBtn">Ajouter couleur</button>
+            </div>
+            <div id="editColorList" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;"></div>
+          </div>
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label for="editProductImages">Images (multiples)</label>
+            <div class="uploader">
+              <input type="file" id="editProductImages" accept="image/*" multiple />
+              <div class="form-help">Jusqu'à 10 images. Cochez pour remplacer toutes les images.</div>
+              <label style="display:inline-flex;align-items:center;gap:8px;margin-top:8px;">
+                <input type="checkbox" id="replaceAllImages" /> Remplacer la galerie
+              </label>
+            </div>
+            <div id="editImagePreview" class="img-previews"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="saveEditProductBtn" class="btn">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="editSessionModal" class="modal-backdrop" style="display:none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Modifier la session</h3>
+        <button type="button" id="closeEditSessionModal" class="icon-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label for="editSessionName">Nom</label>
+            <input type="text" id="editSessionName" />
+          </div>
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label for="editSessionImage">Image</label>
+            <div class="uploader">
+              <input type="file" id="editSessionImage" accept="image/*" />
+              <div class="form-help">Importer une nouvelle image pour mettre à jour la couverture</div>
+            </div>
+            <div id="editSessionImagePreview" class="img-previews"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="saveEditSessionBtn" class="btn">Enregistrer</button>
       </div>
     </div>
   </div>
