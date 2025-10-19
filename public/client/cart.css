@@ -23,6 +23,7 @@ body {
   padding: 0;
   margin: 0;
   min-height: 100vh;
+  overflow-x: hidden; /* avoid page-wide horizontal scroll */
 }
 
 /* ===== Navbar - Consistent with main page ===== */
@@ -198,6 +199,8 @@ body {
   grid-auto-columns: minmax(200px, 1fr);
   gap: 1rem;
   overflow-x: auto;
+  width: 100%;
+  max-width: 100%;
   padding-bottom: .5rem;
   scroll-snap-type: x mandatory;
 }

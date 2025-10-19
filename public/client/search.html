@@ -7,6 +7,30 @@
   <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="icon" type="image/svg+xml" href="./img/WhatsApp Image 2025-05-24 à 22.52.58_10ea0336.jpg" />
+  <style>
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-weight: 400; /* Regular */
+    }
+    h1, h2, h3, strong, b {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-weight: 700; /* Bold */
+    }
+    /* Search header input: ensure no iOS auto-zoom */
+    .search-header-bar input {
+      font-size: 16px; /* >=16px prevents iOS zoom */
+    }
+    /* Results typography */
+    .search-card h3 { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 700; font-size: 1.1rem; }
+    .search-card p { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 400; font-size: 1rem; }
+    /* Slightly larger controls on mobile */
+    @media (max-width: 640px) {
+      .search-header-bar input { font-size: 17px; }
+      .search-card h3 { font-size: 1.15rem; }
+      .search-card p { font-size: 1.02rem; }
+    }
+  </style>
 </head>
 <body>
   <header class="search-header">
