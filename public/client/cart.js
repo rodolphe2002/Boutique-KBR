@@ -56,7 +56,6 @@ function renderCart() {
       <div class="cart-info">
         <h3>${item.title}</h3>
         ${item.selectedVariant ? `<p class="muted">Variante: <strong>${item.selectedVariant}</strong></p>` : ''}
-        <p class="muted">${item.description || ''}</p>
         <button class="link danger" onclick="removeItem(${index})">Retirer</button>
       </div>
       <div class="cart-qty">
