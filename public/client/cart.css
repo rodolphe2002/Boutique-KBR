@@ -27,6 +27,7 @@ img, video { max-width: 100%; height: auto; display: block; }
 }
 
 /* ===== Base & Reset ===== */
+html, body { overflow-x: hidden; }
 body {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   background-color: #FFFFFF;
@@ -35,7 +36,6 @@ body {
   padding: 0;
   margin: 0;
   min-height: 100vh;
-  overflow-x: hidden; /* avoid page-wide horizontal scroll */
 }
 
 /* ===== Navbar - Consistent with main page ===== */
@@ -119,6 +119,7 @@ body {
   grid-template-columns: 2fr 1fr;
   gap: 2rem;
   overflow-x: visible; /* allow inner horizontal scroller */
+  min-width: 0; max-width: 100%;
 }
 
 /* ===== Empty state already defined; reuse .empty-cart ===== */
@@ -129,6 +130,7 @@ body {
   grid-template-columns: 120px 1fr 120px 120px 120px;
   align-items: center;
   gap: 1rem;
+  min-width: 0; max-width: 100%;
   padding: 1rem;
   border: none;
   border-radius: 14px;
@@ -144,7 +146,8 @@ body {
 }
 
 .cart-info h3 { margin: 0 0 .25rem 0; }
-.cart-info .muted { color: #666; font-size: .95rem; margin: .25rem 0; }
+.cart-info { min-width: 0; }
+.cart-info .muted { color: #666; font-size: .95rem; margin: .25rem 0; overflow-wrap: anywhere; word-break: break-word; }
 .cart-info .link { background: none; border: none; color: #d00; cursor: pointer; padding: 0; }
 .cart-info .link.danger { color: #E63946; }
 
@@ -173,6 +176,8 @@ body {
   height: fit-content;
   background: linear-gradient(180deg, #fbfbfb, #f3f4f6);
   box-shadow: 0 8px 24px rgba(0,0,0,.08), 0 1px 0 rgba(255,255,255,.85) inset;
+  width: 100%;
+  max-width: 100%;
 }
 .summary-card h3 {
   margin-top: 0;
@@ -194,6 +199,7 @@ body {
 .checkout-btn {
   display: block;
   width: 100%;
+  max-width: 100%;
   text-align: center;
   margin-top: 1rem;
   height: 48px;
@@ -222,6 +228,7 @@ body {
   -webkit-overflow-scrolling: touch; /* smooth iOS */
   overscroll-behavior-x: contain;    /* keep scroll local */
   touch-action: pan-x;               /* ensure horizontal swipe scrolls */
+  scrollbar-gutter: stable both-edges; /* avoid layout shift when scrollbar appears */
 }
 .reco-grid::-webkit-scrollbar { height: 8px; }
 .reco-grid::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
@@ -237,8 +244,9 @@ body {
 }
 
 @media (max-width: 768px) {
-  .cart-row { grid-template-columns: 90px 1fr 90px 90px 90px; }
+  .cart-row { grid-template-columns: 80px 1fr; }
   .cart-media img { height: 80px; }
+  .cart-qty, .cart-price, .cart-total { grid-column: 1 / -1; }
 }
 
 @media (max-width: 560px) {
