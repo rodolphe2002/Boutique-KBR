@@ -176,7 +176,39 @@ function renderProduct(product) {
     const chosenImage = product.selectedImage || mainImg.src || (product.image || (Array.isArray(product.images) && product.images[0]) || '');
     cart.push({ ...product, image: chosenImage, quantity: qty, selectedVariant: product.selectedVariant || null, selectedColor: product.selectedColor || null });
     localStorage.setItem('cart', JSON.stringify(cart));
-    window.location.href = 'cart.html';
+
+    // Animated transition: right -> left (bounce) -> center small -> expand -> navigate
+    try {
+      const url = './cart.html';
+      const cube = document.createElement('div');
+      cube.className = 'page-transition page-transition--preview page-transition--from-right';
+      const iframe = document.createElement('iframe');
+      iframe.src = url;
+      iframe.setAttribute('aria-hidden', 'true');
+      iframe.tabIndex = -1;
+      cube.appendChild(iframe);
+      document.body.appendChild(cube);
+
+      // Force reflow before moving
+      void cube.offsetWidth;
+      // 1) slide to left edge
+      cube.classList.add('page-transition--to-left');
+      // 2) after reaching left, go to center (reuse existing center size)
+      setTimeout(() => {
+        cube.classList.add('page-transition--center');
+        // 3) expand to full screen
+        setTimeout(() => {
+          cube.classList.add('page-transition--expand');
+        }, 650);
+      }, 700);
+
+      const go = () => { window.location.href = url; };
+      cube.addEventListener('transitionend', go, { once: true });
+      // Fallback in case transitionend is missed
+      setTimeout(go, 2200);
+    } catch {
+      window.location.href = 'cart.html';
+    }
   });
 
   // accordions toggle

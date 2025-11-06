@@ -40,7 +40,7 @@
   <link rel="icon" href="./img/WhatsApp Image 2025-05-24 à 22.52.58_10ea0336.jpg" />
 </head>
 
-<body>
+<body class="checkout-page">
   <h1 style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">Checkout Boutique KBR – Validation de commande</h1>
 
   <!-- 🔹 Barre de navigation -->
@@ -58,17 +58,57 @@
     <div class="cart-grid">
       <!-- Colonne gauche: formulaire client -->
       <section class="client-form" aria-label="Informations client">
+        <!-- From Uiverse.io by Vraj747 — wave inputs -->
         <div class="form-group">
-          <label for="clientName">Nom complet</label>
-          <input type="text" id="clientName" placeholder="Votre nom et prénom" autocomplete="name" />
+          <div class="wave-group">
+            <input class="input" type="text" id="clientName" required autocomplete="name" />
+            <span class="bar"></span>
+            <label class="label" for="clientName" aria-label="Nom complet">
+              <span style="--index:0" class="label-char">N</span>
+              <span style="--index:1" class="label-char">o</span>
+              <span style="--index:2" class="label-char">m</span>
+              <span style="--index:3" class="label-char"> </span>
+              <span style="--index:4" class="label-char">c</span>
+              <span style="--index:5" class="label-char">o</span>
+              <span style="--index:6" class="label-char">m</span>
+              <span style="--index:7" class="label-char">p</span>
+              <span style="--index:8" class="label-char">l</span>
+              <span style="--index:9" class="label-char">e</span>
+              <span style="--index:10" class="label-char">t</span>
+            </label>
+          </div>
         </div>
         <div class="form-group">
-          <label for="clientPhone">Téléphone</label>
-          <input type="text" id="clientPhone" placeholder="Votre numéro de téléphone" inputmode="tel" autocomplete="tel" />
+          <div class="wave-group">
+            <input class="input" type="tel" id="clientPhone" required inputmode="tel" autocomplete="tel" />
+            <span class="bar"></span>
+            <label class="label" for="clientPhone" aria-label="Téléphone">
+              <span style="--index:0" class="label-char">T</span>
+              <span style="--index:1" class="label-char">é</span>
+              <span style="--index:2" class="label-char">l</span>
+              <span style="--index:3" class="label-char">é</span>
+              <span style="--index:4" class="label-char">p</span>
+              <span style="--index:5" class="label-char">h</span>
+              <span style="--index:6" class="label-char">o</span>
+              <span style="--index:7" class="label-char">n</span>
+              <span style="--index:8" class="label-char">e</span>
+            </label>
+          </div>
         </div>
         <div class="form-group">
-          <label for="clientAddress">Adresse</label>
-          <textarea id="clientAddress" placeholder="Votre adresse complète" rows="4"></textarea>
+          <div class="wave-group">
+            <textarea class="input" id="clientAddress" required rows="3" autocomplete="street-address"></textarea>
+            <span class="bar"></span>
+            <label class="label" for="clientAddress" aria-label="Adresse">
+              <span style="--index:0" class="label-char">A</span>
+              <span style="--index:1" class="label-char">d</span>
+              <span style="--index:2" class="label-char">r</span>
+              <span style="--index:3" class="label-char">e</span>
+              <span style="--index:4" class="label-char">s</span>
+              <span style="--index:5" class="label-char">s</span>
+              <span style="--index:6" class="label-char">e</span>
+            </label>
+          </div>
         </div>
         <div class="form-group">
           <button onclick="validateOrder()">Valider la commande</button>
@@ -102,26 +142,53 @@
       if (!el) return;
       const items = JSON.parse(localStorage.getItem('cart')||'[]');
       if (!items.length) {
-        el.innerHTML = '<h3>Résumé</h3><p>Votre panier est vide.</p>';
+        el.innerHTML = '<div class="receipt"><p class="shop-name">Boutique KBR</p><p class="info">Votre panier est vide.</p></div>';
         return;
       }
       let subtotal = 0;
-      const list = items.map(it => {
+      const rows = items.map(it => {
         const qty = Number(it.quantity)||1;
         const price = Number(it.price)||0;
         const line = qty * price;
         subtotal += line;
-        return `<div style="display:flex; justify-content:space-between; gap:8px; padding:.35rem 0;">
-          <span style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${it.title} × ${qty}</span>
-          <span><strong>${line} FCFA</strong></span>
-        </div>`;
+        return `<tr>
+          <td title="${it.title}">${it.title}</td>
+          <td>${qty}</td>
+          <td>${line} FCFA</td>
+        </tr>`;
       }).join('');
       const total = subtotal; // pas de frais pour l'instant
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('fr-FR');
+      const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
       el.innerHTML = `
-        <h3>Résumé</h3>
-        <div>${list}</div>
-        <div class="summary-total" style="margin-top:.5rem; border-top:1px solid rgba(0,0,0,.08); padding-top:.5rem; display:flex; justify-content:space-between;">
-          <span>Total</span><span>${total} FCFA</span>
+        <div class="receipt">
+          <p class="shop-name">Boutique KBR</p>
+          <p class="info">
+            Commande en ligne<br/>
+            Date: ${dateStr}<br/>
+            Heure: ${timeStr}
+          </p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Article</th>
+                <th>Qté</th>
+                <th>Prix</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows}
+            </tbody>
+          </table>
+
+          <div class="total">
+            <p>Total:</p>
+            <p>${total} FCFA</p>
+          </div>
+
+          <p class="thanks">Merci pour votre confiance !</p>
         </div>
       `;
     })();

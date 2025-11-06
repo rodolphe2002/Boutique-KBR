@@ -153,7 +153,27 @@ async function fetchProducts(sessionId, sessionMeta) {
       `;
       card.style.cursor = 'pointer';
       card.addEventListener('click', () => {
-        window.location.href = `./product.html?productId=${encodeURIComponent(product._id)}`;
+        try {
+          const url = `./product.html?productId=${encodeURIComponent(product._id)}`;
+          const cube = document.createElement('div');
+          cube.className = 'page-transition page-transition--preview page-transition--from-bottom';
+          const iframe = document.createElement('iframe');
+          iframe.src = url;
+          iframe.setAttribute('aria-hidden', 'true');
+          iframe.tabIndex = -1;
+          cube.appendChild(iframe);
+          document.body.appendChild(cube);
+          // step 1: go to center
+          void cube.offsetWidth; // reflow
+          cube.classList.add('page-transition--center');
+          // step 2: expand to fullscreen
+          setTimeout(() => { cube.classList.add('page-transition--expand'); }, 700);
+          const go = () => { window.location.href = url; };
+          cube.addEventListener('transitionend', go, { once: true });
+          setTimeout(go, 1900);
+        } catch {
+          window.location.href = `./product.html?productId=${encodeURIComponent(product._id)}`;
+        }
       });
       productList.appendChild(card);
     });
@@ -253,6 +273,31 @@ function performSearch(query) {
         card.querySelectorAll('.thumbs img').forEach(e => e.classList.remove('active'));
         imgEl.classList.add('active');
       });
+    });
+    // click -> animated transition to product detail
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', () => {
+      try {
+        const url = `./product.html?productId=${encodeURIComponent(product._id)}`;
+        const cube = document.createElement('div');
+        cube.className = 'page-transition page-transition--preview page-transition--from-bottom';
+        const iframe = document.createElement('iframe');
+        iframe.src = url;
+        iframe.setAttribute('aria-hidden', 'true');
+        iframe.tabIndex = -1;
+        cube.appendChild(iframe);
+        document.body.appendChild(cube);
+        // step 1: center
+        void cube.offsetWidth;
+        cube.classList.add('page-transition--center');
+        // step 2: expand
+        setTimeout(() => { cube.classList.add('page-transition--expand'); }, 700);
+        const go = () => { window.location.href = url; };
+        cube.addEventListener('transitionend', go, { once: true });
+        setTimeout(go, 1900);
+      } catch {
+        window.location.href = `./product.html?productId=${encodeURIComponent(product._id)}`;
+      }
     });
     productList.appendChild(card);
   });

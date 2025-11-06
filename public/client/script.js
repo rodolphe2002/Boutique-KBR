@@ -12,6 +12,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const toggle = document.getElementById('searchToggle');
   const bar = document.getElementById('collapsibleSearch');
   const input = document.getElementById('searchInput');
+  // Banner intro animation on page load
+  const banner = document.querySelector('.banniere');
+  if (banner) {
+    // Use RAF to ensure styles are applied before starting animation
+    requestAnimationFrame(() => banner.classList.add('intro-anim'));
+  }
+  if (typeof window !== 'undefined') {
+    if (window.gsap && window.ScrollTrigger) {
+      window.gsap.registerPlugin(window.ScrollTrigger);
+    }
+    if (window.Lenis) {
+      const lenis = new window.Lenis();
+      function raf(time) {
+        lenis.raf(time);
+        if (window.ScrollTrigger) window.ScrollTrigger.update();
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+    }
+    if (window.gsap) {
+      try { window.gsap.from('.banniere .fancy', { opacity: 0, y: 20, duration: 0.8, ease: 'power2.out', delay: 0.2 }); } catch {}
+    }
+  }
   if (toggle && bar) {
     bar.classList.remove('open');
     let suppressNextFocusNavigate = false;
@@ -83,6 +106,37 @@ function renderRecent(products) {
   const wrap = document.getElementById('recentScroller');
   if (!wrap) return;
   wrap.innerHTML = '';
+  const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches;
+  if (isMobile) {
+    const stack = document.createElement('div');
+    stack.className = 'uiverse-stack play';
+    const top4 = products.slice(0, 4);
+    // Ensure we have 4 cards (duplicate if fewer)
+    while (top4.length < 4 && products.length) top4.push(products[top4.length % products.length]);
+    while (top4.length < 4) top4.push({ title: 'KBR', image: './img/Logo.jpg' });
+
+    top4.forEach((p) => {
+      const imgSrc = p.image || (Array.isArray(p.images) && p.images[0]) || '';
+      const div = document.createElement('div');
+      div.className = 'uiverse-card';
+      if (imgSrc) div.style.backgroundImage = `url('${imgSrc}')`;
+      const label = document.createElement('span');
+      label.textContent = p.title || '';
+      div.appendChild(label);
+      if (p._id) {
+        div.style.cursor = 'pointer';
+        div.addEventListener('click', () => {
+          window.location.href = `./product.html?productId=${encodeURIComponent(p._id)}`;
+        });
+      }
+      stack.appendChild(div);
+    });
+
+    wrap.appendChild(stack);
+    return;
+  }
+
+  // Desktop/tablet: keep grid of recent cards
   products.forEach((p) => {
     const imgSrc = p.image || (Array.isArray(p.images) && p.images[0]) || '';
     const card = document.createElement('article');
@@ -121,6 +175,21 @@ function renderRecent(products) {
     }
     tag.textContent = JSON.stringify(ld);
   } catch {}
+
+  if (window.gsap && window.ScrollTrigger) {
+    try {
+      window.gsap.utils.toArray('.recent-card').forEach((el) => {
+        window.gsap.from(el, {
+          opacity: 0,
+          y: 40,
+          duration: 0.8,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none reverse' }
+        });
+      });
+      window.ScrollTrigger.refresh();
+    } catch {}
+  }
 }
 
 function renderSessionsGrid(sessions) {
@@ -139,13 +208,40 @@ function renderSessionsGrid(sessions) {
       <div class="session-overlay">
         <p class="session-subtitle">${s.name}</p>
         <h3 class="session-title">Découvrez ${s.name}</h3>
-        <button class="session-cta" data-session-id="${s._id}">Acheter</button>
+        <button class="session-cta cta" data-session-id="${s._id}">
+          <span class="hover-underline-animation">Acheter</span>
+          <svg id="arrow-horizontal" xmlns="http://www.w3.org/2000/svg" width="30" height="10" viewBox="0 0 46 16" aria-hidden="true">
+            <path id="Path_10" data-name="Path 10" d="M8,0,6.545,1.455l5.506,5.506H-30V9.039H12.052L6.545,14.545,8,16l8-8Z" transform="translate(30)"></path>
+          </svg>
+        </button>
       </div>
     `;
 
     const btn = card.querySelector('.session-cta');
+    let isNavigating = false;
     const navigate = () => {
-      window.location.href = `./session.html?sessionId=${encodeURIComponent(s._id)}`;
+      if (isNavigating) return;
+      isNavigating = true;
+      try {
+        const cube = document.createElement('div');
+        cube.className = 'page-transition page-transition--preview';
+        const url = `./session.html?sessionId=${encodeURIComponent(s._id)}`;
+        const iframe = document.createElement('iframe');
+        iframe.src = url;
+        iframe.setAttribute('aria-hidden', 'true');
+        iframe.tabIndex = -1;
+        cube.appendChild(iframe);
+        document.body.appendChild(cube);
+        // Forcer le reflow pour que la transition démarre
+        void cube.offsetWidth;
+        cube.classList.add('page-transition--expand');
+        const go = () => { window.location.href = url; };
+        // Sécurité: navigation après la durée de la transition
+        cube.addEventListener('transitionend', go, { once: true });
+        setTimeout(go, 1300);
+      } catch {
+        window.location.href = `./session.html?sessionId=${encodeURIComponent(s._id)}`;
+      }
     };
     btn.addEventListener('click', navigate);
     card.addEventListener('click', (e) => {
@@ -156,6 +252,21 @@ function renderSessionsGrid(sessions) {
 
     grid.appendChild(card);
   });
+
+  if (window.gsap && window.ScrollTrigger) {
+    try {
+      window.gsap.utils.toArray('.session-card').forEach((el) => {
+        window.gsap.from(el, {
+          opacity: 0,
+          y: 40,
+          duration: 0.8,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none reverse' }
+        });
+      });
+      window.ScrollTrigger.refresh();
+    } catch {}
+  }
 }
 
 async function fetchProducts(sessionId) {

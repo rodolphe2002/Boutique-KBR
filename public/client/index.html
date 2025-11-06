@@ -63,7 +63,7 @@
 </script>
 
 </head>
-<body>
+<body class="index-home">
   <h1 style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">Boutique KBR – Nouveautés, Mode, Accessoires et Bons Plans</h1>
 
   <!-- 🔹 Barre de navigation -->
@@ -95,7 +95,42 @@
   </video>
   <div class="banniere-contenu">
     <p></p>
-    <button><a href="#productList">En Savoir Plus</a></button>
+    <a class="fancy" href="#productList">
+      <span class="top-key"></span>
+      <span class="text">En Savoir Plus</span>
+      <span class="bottom-key-1"></span>
+      <span class="bottom-key-2"></span>
+    </a>
+  </div>
+
+  <!-- Hints overlay -->
+  <div class="item-hints">
+    <!-- HAUT: top-right -->
+    <div class="hint pos-top-right" data-position="1">
+      <span class="hint-radius"></span>
+      <span class="hint-dot">HAUT</span>
+      <div class="hint-content do--split-children">
+        <p>HAUT regroupe tous les vêtements qui concernent le haut du corps.</p>
+      </div>
+    </div>
+
+    <!-- BAS: left middle -->
+    <div class="hint pos-left-center" data-position="1">
+      <span class="hint-radius"></span>
+      <span class="hint-dot">BAS</span>
+      <div class="hint-content do--split-children">
+        <p>BAS regroupe tous les vêtements qui concernent le bas du corps.</p>
+      </div>
+    </div>
+
+    <!-- CHAUSSURES: bottom center -->
+    <div class="hint pos-bottom-center" data-position="4">
+      <span class="hint-radius"></span>
+      <span class="hint-dot">CHAUSSURES</span>
+      <div class="hint-content do--split-children">
+        <p>CHAUSSURES regroupe toutes les chaussures pour homme et femme.</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -111,7 +146,15 @@
 
   <!-- Pourquoi choisir KBR ? -->
   <section class="why-kbr" aria-label="Pourquoi choisir KBR ?">
-    <h2><i class="fa-solid fa-star"></i> Pourquoi choisir KBR ?</h2>
+    <h2>
+      <button class="faq-button" aria-label="FAQ" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" aria-hidden="true">
+          <path d="M80 160c0-35.3 28.7-64 64-64h32c35.3 0 64 28.7 64 64v3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74V320c0 17.7 14.3 32 32 32s32-14.3 32-32v-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7V160c0-70.7-57.3-128-128-128H144C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"></path>
+        </svg>
+        <span class="tooltip">FAQ</span>
+      </button>
+      Pourquoi choisir KBR ?
+    </h2>
     <div class="accordion">
       <details>
         <summary><i class="fa-solid fa-shield-halved"></i> Qualité garantie</summary>
@@ -213,6 +256,11 @@
 
 
 
+
+  <!-- 🔹 Vendor: GSAP + ScrollTrigger + Lenis -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.35/bundled/lenis.min.js"></script>
 
   <!-- 🔹 Scripts -->
   <script src="./script.js"></script>
