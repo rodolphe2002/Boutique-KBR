@@ -23,15 +23,53 @@ document.addEventListener('DOMContentLoaded', () => {
       window.gsap.registerPlugin(window.ScrollTrigger);
     }
     if (window.Lenis) {
-      const lenis = new window.Lenis();
+      const isMobile = (typeof window !== 'undefined') && (
+        (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) ||
+        ('ontouchstart' in window && !(window.matchMedia && window.matchMedia('(pointer: fine)').matches))
+      );
+      const baseDuration = isMobile ? 10.0 : 7.0;
+      const lenis = new window.Lenis({
+        duration: baseDuration,
+        easing: (t) => 1 - Math.pow(1 - t, 3),
+        smoothWheel: true,
+        smoothTouch: true,
+        touchMultiplier: 1.2,
+        normalizeWheel: true,
+        syncTouch: true
+      });
+      window.lenis = lenis;
+
       function raf(time) {
         lenis.raf(time);
         if (window.ScrollTrigger) window.ScrollTrigger.update();
         requestAnimationFrame(raf);
       }
       requestAnimationFrame(raf);
+
+      if (window.ScrollTrigger && typeof lenis.on === 'function') {
+        try { lenis.on('scroll', () => window.ScrollTrigger.update()); } catch {}
+      }
+
+      try {
+        document.querySelectorAll('a[href^="#"]').forEach((a) => {
+          a.addEventListener('click', (e) => {
+            const href = a.getAttribute('href');
+            if (!href || href === '#') return;
+            const target = document.querySelector(href);
+            if (target) {
+              e.preventDefault();
+              const isMob = (typeof window !== 'undefined') && (
+                (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) ||
+                ('ontouchstart' in window && !(window.matchMedia && window.matchMedia('(pointer: fine)').matches))
+              );
+              const dur = isMob ? 10.0 : 7.0;
+              lenis.scrollTo(target, { offset: -12, duration: dur, easing: (t) => 1 - Math.pow(1 - t, 3) });
+            }
+          });
+        });
+      } catch {}
     }
-    if (window.gsap) {
+    if (window.gsap && document.querySelector('.banniere .fancy')) {
       try { window.gsap.from('.banniere .fancy', { opacity: 0, y: 20, duration: 0.8, ease: 'power2.out', delay: 0.2 }); } catch {}
     }
   }
@@ -56,6 +94,161 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 });
+
+// Premium scroll behaviors and animations
+(function(){
+  if (typeof window === 'undefined') return;
+  document.addEventListener('DOMContentLoaded', () => {
+    const gsap = window.gsap;
+    const ScrollTrigger = window.ScrollTrigger;
+    // Navbar compact on scroll
+    try {
+      const nav = document.querySelector('.navbar');
+      if (nav) {
+        const onScroll = () => {
+          const y = window.scrollY || document.documentElement.scrollTop || 0;
+          if (y > 10) nav.classList.add('navbar--condensed');
+          else nav.classList.remove('navbar--condensed');
+        };
+        onScroll();
+        if (window.lenis && typeof window.lenis.on === 'function') {
+          try { window.lenis.on('scroll', onScroll); } catch {}
+        } else {
+          window.addEventListener('scroll', onScroll, { passive: true });
+        }
+      }
+    } catch {}
+
+    // Scroll progress bar
+    try {
+      let bar = document.getElementById('scrollProgress');
+      if (!bar) {
+        bar = document.createElement('div');
+        bar.id = 'scrollProgress';
+        const inner = document.createElement('div');
+        inner.className = 'scroll-progress__bar';
+        bar.appendChild(inner);
+        document.body.appendChild(bar);
+      }
+      const inner = bar.querySelector('.scroll-progress__bar');
+      const update = (p) => { if (inner) inner.style.transform = `scaleX(${p})`; };
+      const doUpdate = () => {
+        const doc = document.documentElement;
+        const scrollTop = doc.scrollTop || window.pageYOffset || 0;
+        const max = (doc.scrollHeight - doc.clientHeight) || 1;
+        update(Math.min(1, Math.max(0, scrollTop / max)));
+      };
+      doUpdate();
+      if (window.lenis && typeof window.lenis.on === 'function') {
+        try { window.lenis.on('scroll', doUpdate); } catch {}
+      } else {
+        window.addEventListener('scroll', doUpdate, { passive: true });
+      }
+    } catch {}
+
+    // Parallax banner and content fade
+    if (gsap && ScrollTrigger && document.querySelector('.banniere')) {
+      try {
+        const media = document.querySelector('.banniere .banniere-media');
+        const content = document.querySelector('.banniere .banniere-contenu');
+        if (media) {
+          gsap.to(media, {
+            scale: 1.08,
+            ease: 'none',
+            scrollTrigger: { trigger: '.banniere', start: 'top top', end: 'bottom top', scrub: true }
+          });
+        }
+        if (content) {
+          gsap.to(content, {
+            yPercent: -20, autoAlpha: 0.0,
+            ease: 'none',
+            scrollTrigger: { trigger: '.banniere', start: 'top top', end: 'bottom top', scrub: true }
+          });
+        }
+      } catch {}
+    }
+
+    // Reveal animations for sections/cards
+    if (gsap && ScrollTrigger) {
+      try {
+        gsap.utils.toArray('.session-card, .why-card, .product-card').forEach((el) => {
+          gsap.from(el, {
+            opacity: 0,
+            y: 40,
+            duration: 0.8,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none reverse' }
+          });
+        });
+        if (window.ScrollTrigger) window.ScrollTrigger.refresh();
+      } catch {}
+    }
+
+    // Why KBR: dock previous image when the next one scrolls into view
+    (function setupWhyKBRDocking(){
+      const gsap = window.gsap; const ST = window.ScrollTrigger;
+      if (!gsap || !ST) return;
+      try {
+        const container = document.querySelector('.why-kbr');
+        if (!container) return;
+        const cards = Array.from(container.querySelectorAll('.why-card'));
+        if (cards.length < 2) return;
+        const isMobile = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+        const sideX = isMobile ? (window.innerWidth * 0.18) : (window.innerWidth * 0.22);
+        const stackGap = isMobile ? 60 : 72;
+        const dockSize = isMobile ? 88 : 120; // square size when docked
+
+        cards.forEach((card, i) => {
+          if (i === 0) return; // from second card onward
+          const prevCards = cards.slice(0, i);
+          prevCards.forEach((el) => gsap.set(el, { transformOrigin: 'top left', willChange: 'transform,width,height' }));
+
+          // Create a scrubbed timeline so the docking eases with scroll and reverses naturally
+          const tl = gsap.timeline({
+            defaults: { ease: 'power2.out' },
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 85%',
+              end: 'top 50%',
+              scrub: true,
+              invalidateOnRefresh: true
+            }
+          });
+
+          prevCards.forEach((el, j) => {
+            tl.to(el, {
+              x: -sideX,
+              y: j * (isMobile ? 48 : 56),
+              width: dockSize,
+              height: dockSize,
+              borderRadius: 12,
+              scale: isMobile ? 0.66 : 0.6
+            }, 0);
+          });
+        });
+        ST.refresh();
+      } catch {}
+    })();
+
+    // Expose a small API to tune feel at runtime
+    try {
+      window.setScrollFeel = function(opts = {}){
+        const l = window.lenis; if (!l) return;
+        const curr = l.options || {};
+        const next = {
+          duration: opts.duration != null ? opts.duration : curr.duration,
+          easing: typeof opts.easing === 'function' ? opts.easing : curr.easing,
+          smoothWheel: opts.smoothWheel != null ? opts.smoothWheel : curr.smoothWheel,
+          smoothTouch: opts.smoothTouch != null ? opts.smoothTouch : curr.smoothTouch,
+          touchMultiplier: opts.touchMultiplier != null ? opts.touchMultiplier : curr.touchMultiplier,
+          normalizeWheel: opts.normalizeWheel != null ? opts.normalizeWheel : curr.normalizeWheel,
+          syncTouch: opts.syncTouch != null ? opts.syncTouch : curr.syncTouch
+        };
+        try { l.update(next); } catch {}
+      };
+    } catch {}
+  });
+})();
 
 async function fetchSessions() { 
   try {
@@ -133,6 +326,42 @@ function renderRecent(products) {
     });
 
     wrap.appendChild(stack);
+
+    // Mobile-only smooth animations for the recent products stack
+    try {
+      const gsap = window.gsap; const ST = window.ScrollTrigger;
+      const cards = stack.querySelectorAll('.uiverse-card');
+      if (gsap && cards.length) {
+        // Initial reveal of the stack cards
+        try {
+          gsap.set(cards, { opacity: 0, y: 24, scale: 0.985 });
+          gsap.to(cards, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.8,
+            ease: 'power2.out',
+            stagger: 0.08,
+            scrollTrigger: ST ? { trigger: wrap, start: 'top 85%' } : undefined
+          });
+        } catch {}
+
+        // Subtle parallax drift while scrolling the section
+        if (ST) {
+          try {
+            gsap.utils.toArray(cards).forEach((el, i) => {
+              gsap.to(el, {
+                yPercent: 4 + (i * 1),
+                ease: 'none',
+                scrollTrigger: { trigger: wrap, start: 'top bottom', end: 'bottom top', scrub: true }
+              });
+            });
+            ST.refresh();
+          } catch {}
+        }
+      }
+    } catch {}
+
     return;
   }
 

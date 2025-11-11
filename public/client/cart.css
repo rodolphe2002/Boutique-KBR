@@ -14,6 +14,13 @@
   --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.16);
 }
 
+/* Lenis helpers: disable native smooth and handle states */
+html { scroll-behavior: auto !important; }
+.lenis.lenis-smooth { scroll-behavior: auto; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+.lenis.lenis-smooth iframe { pointer-events: none; }
+
 /* From Uiverse.io by shlomo20 — Cards layout for cart items (scoped) */
 #cartItems { position: relative; }
 #cartItems.cards-mode { display: block; min-height: 380px; }
